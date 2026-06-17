@@ -1806,15 +1806,28 @@ function renderList(selector, values = []) {
 function renderRoadmap(report) {
   const roadmap = el("#roadmap");
   clearNode(roadmap);
-  const phases = [
-    { title: "1. Acogida y delimitacion", items: [report.objectives[0], report.strategies[0]] },
-    { title: "2. Diagnostico social operativo", items: report.professionalObservations.slice(0, 2) },
-    { title: "3. Activacion de recursos", items: report.resources.slice(0, 3).map((resource) => `${resource.name}: ${resource.description}`) },
-    { title: "4. Seguimiento", items: report.recommendations }
-  ];
+  const programPhases = report.interventionProgram?.phases || [];
+  const phases = programPhases.length
+    ? programPhases.map((phase) => ({
+        title: phase.phase,
+        timeframe: phase.timeframe,
+        focus: phase.focus,
+        goal: phase.goal,
+        items: [...(phase.actions || []), ...(phase.indicators || []).map((indicator) => `Indicador: ${indicator}`)].slice(0, 6)
+      }))
+    : [
+        { title: "1. Acogida y delimitacion", items: [report.objectives[0], report.strategies[0]] },
+        { title: "2. Diagnostico social operativo", items: report.professionalObservations.slice(0, 2) },
+        { title: "3. Activacion de recursos", items: report.resources.slice(0, 3).map((resource) => `${resource.name}: ${resource.description}`) },
+        { title: "4. Seguimiento", items: report.recommendations }
+      ];
   phases.forEach((phase) => {
     const item = create("article", "roadmap-step");
+    if (phase.timeframe) item.appendChild(create("span", "roadmap-timeframe", phase.timeframe));
     item.appendChild(create("strong", "", phase.title));
+    if (phase.focus || phase.goal) {
+      item.appendChild(create("p", "", compactParts([phase.focus, phase.goal])));
+    }
     const list = create("ul");
     phase.items.filter(Boolean).forEach((entry) => list.appendChild(create("li", "", entry)));
     item.appendChild(list);
@@ -1986,6 +1999,7 @@ function renderInterventionProgram(report) {
             (phase) => `
               <div>
                 <strong>${escapeHtml(phase.phase)}</strong>
+                ${phase.timeframe ? `<span class="phase-timeframe">${escapeHtml(phase.timeframe)}</span>` : ""}
                 <p>${escapeHtml(phase.goal)}</p>
                 <ul>${listMarkup([...(phase.actions || []), ...(phase.indicators || [])])}</ul>
               </div>
@@ -2115,11 +2129,21 @@ async function exportReportPdf() {
       (phase) => `
         <div class="card phase">
           <h3>${escapeHtml(phase.phase)}</h3>
+          ${phase.timeframe ? `<p><strong>Plazo:</strong> ${escapeHtml(phase.timeframe)}</p>` : ""}
+          ${phase.focus ? `<p><strong>Foco profesional:</strong> ${escapeHtml(phase.focus)}</p>` : ""}
           <p>${escapeHtml(phase.goal)}</p>
           <ul>${pdfList([...(phase.actions || []), ...(phase.indicators || [])])}</ul>
         </div>
       `
     )
+    .join("");
+  const monitoringRows = [
+    ["Indicadores verificables", program.indicators],
+    ["Cautelas profesionales", program.cautions],
+    ["Criterios de reajuste", report.recommendations]
+  ]
+    .filter(([, items]) => items?.length)
+    .map(([title, items]) => `<div class="card phase"><h3>${escapeHtml(title)}</h3><ul>${pdfList(items)}</ul></div>`)
     .join("");
   const academicRows = (report.academicBasis || [])
     .map(
@@ -2244,9 +2268,7 @@ async function exportReportPdf() {
             ? `<section><h2>Sociograma</h2><div class="card">${sociogramRows ? `<ul>${sociogramRows}</ul>` : "Sociograma activo pero sin nodos registrados."}</div></section>`
             : ""
         }
-        <section><h2>Hoja de ruta</h2><div class="roadmap">${["Acogida", "Diagnostico operativo", "Recursos", "Seguimiento"]
-          .map((title, index) => `<div class="card phase"><h3>${title}</h3><p>${escapeHtml((report.strategies[index] || report.recommendations[index] || report.objectives[index] || ""))}</p></div>`)
-          .join("")}</div></section>
+        <section><h2>Seguimiento, reajuste y cautelas</h2><div class="roadmap">${monitoringRows || '<div class="card">Sin criterios de seguimiento generados.</div>'}</div></section>
         <section><h2>Recursos integrados</h2><div class="grid">${resources
           .map((resource) => `<div class="card"><strong>${escapeHtml(resource.name)}</strong><br><small>${escapeHtml(resource.city || caseData.city)} · ${escapeHtml(resource.category || "")} · ${escapeHtml(resource.type || "")}</small><p>${escapeHtml(resource.description || "")}</p></div>`)
           .join("")}</div></section>

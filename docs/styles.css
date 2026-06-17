@@ -164,20 +164,33 @@ select:focus-visible {
   display: grid;
   place-items: center;
   gap: 18px;
-  width: min(720px, calc(100vw - 44px));
+  width: min(820px, calc(100vw - 44px));
+  padding: 18px;
+  border: 1px solid rgba(255, 79, 196, 0.2);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(255, 79, 196, 0.08), rgba(65, 208, 216, 0.08)),
+    #fff;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
   transform-origin: center;
   animation: intro-card 2.05s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .brand-intro-card img {
-  width: min(156px, 42vw);
-  border-radius: 14px;
-  filter: drop-shadow(0 24px 60px rgba(0, 0, 0, 0.42));
+  width: min(100%, 760px);
+  border-radius: 12px;
+  filter: none;
+}
+
+.intro-wordmark {
+  display: block;
+  height: auto;
+  object-fit: contain;
 }
 
 .brand-intro-card span {
   display: block;
-  width: min(340px, 48vw);
+  width: min(520px, 68vw);
   height: 3px;
   border-radius: 999px;
   background: linear-gradient(90deg, transparent, var(--fuchsia), var(--cyan), transparent);
@@ -257,13 +270,14 @@ select:focus-visible {
 }
 
 .app-logo {
-  width: clamp(82px, 8vw, 112px);
+  width: clamp(74px, 7vw, 102px);
   aspect-ratio: 1;
   flex: 0 0 auto;
   border: 1px solid rgba(255, 79, 196, 0.38);
-  border-radius: 12px;
-  background: var(--surface-3);
+  border-radius: 14px;
+  background: #fff;
   object-fit: contain;
+  padding: 4px;
   box-shadow:
     0 18px 44px rgba(0, 0, 0, 0.24),
     0 0 0 5px rgba(255, 79, 196, 0.05);
@@ -1378,8 +1392,9 @@ svg text {
   height: 58px;
   border: 1px solid rgba(255, 79, 196, 0.36);
   border-radius: 12px;
-  background: var(--surface-3);
+  background: #fff;
   object-fit: contain;
+  padding: 3px;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
 }
 
@@ -1504,6 +1519,20 @@ svg text {
   padding: 10px;
 }
 
+.phase-timeframe,
+.roadmap-timeframe {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255, 79, 196, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 79, 196, 0.1);
+  color: var(--fuchsia);
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
 .source-card a {
   color: var(--cyan);
   font-size: 0.84rem;
@@ -1563,12 +1592,20 @@ svg text {
 .roadmap-step {
   border: 1px solid var(--line-soft);
   border-radius: 8px;
-  background: var(--surface-3);
+  background:
+    linear-gradient(135deg, rgba(255, 79, 196, 0.08), transparent 46%),
+    var(--surface-3);
   padding: 12px;
 }
 
 .roadmap-step strong {
   color: var(--cyan);
+}
+
+.roadmap-step p {
+  margin: 8px 0;
+  color: var(--muted);
+  font-size: 0.84rem;
 }
 
 .selected-resources {

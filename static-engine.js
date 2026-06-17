@@ -1731,15 +1731,55 @@ function buildInterventionProgram(caseData = {}, inference = {}, familyHealth = 
     ])
   };
 
+  const selectedResourceNames = selectedResources
+    .map((resource) => (typeof resource === "string" ? resource : resource?.name))
+    .filter(Boolean);
+  const resourceNames = selectedResourceNames.length
+    ? selectedResourceNames
+    : (inference.recommendedResources || []).map((resource) => resource.name).filter(Boolean);
+  const phaseMeta = [
+    {
+      timeframe: highPriority ? "0-72 horas y primera entrevista" : "Primera semana",
+      focus: "seguridad, vinculo y consentimiento"
+    },
+    {
+      timeframe: "Semana 1-2",
+      focus: "diagnostico psicosocial operativo"
+    },
+    {
+      timeframe: highPriority ? "Semanas 2-4" : "Semanas 2-6",
+      focus: "plan individualizado y activacion de recursos"
+    },
+    {
+      timeframe: highPriority ? "Revision semanal inicial y evaluacion a 30 dias" : "Revision quincenal o mensual y evaluacion a 60-90 dias",
+      focus: "seguimiento, evaluacion y ajuste"
+    }
+  ];
   const phases = academicFramework.interventionModel.map((phase, index) => {
-    const phaseActions = [
-      index === 0 ? "Validar demanda, urgencias, privacidad y expectativas de la persona usuaria." : "",
-      index === 1 ? "Cruzar CIE-11, variables activas, red, vivienda, empleo, estudios, origen, derechos y apoyos reconocidos." : "",
-      index === 2 ? "Asignar objetivos, recursos, responsables y plazos con criterios de prioridad y consentimiento." : "",
-      index === 3 ? "Revisar indicadores, reformular hipotesis y documentar cambios en autonomia, red y acceso a derechos." : ""
-    ].filter(Boolean);
+    const phaseActions = asList([
+      index === 0 ? "Validar demanda, urgencias, privacidad, consentimiento informado y expectativas de la persona usuaria." : "",
+      index === 0 && highPriority
+        ? "Explorar riesgo inmediato: emergencia social, violencia, perdida residencial, ideacion autolesiva, desproteccion o necesidad sanitaria urgente."
+        : "",
+      index === 0 && needsRights ? "Comprobar empadronamiento, documentacion disponible, interpretacion linguistica y barreras de acceso a servicios." : "",
+      index === 0 && needsHealth ? "Diferenciar diagnostico confirmado, indicios, relato de la persona y necesidades de apoyo sin emitir juicio clinico." : "",
+      index === 1 ? "Cruzar CIE-11, variables activas, vivienda, empleo, estudios, origen, derechos, ingresos y apoyos reconocidos." : "",
+      index === 1 && caseData.tools?.genogram?.applies ? "Analizar genograma: parentesco, apoyos, conflictos, cuidados, sobrecargas y salud asociada a familiares." : "",
+      index === 1 && caseData.tools?.sociogram?.applies ? "Analizar sociograma: nodos seguros, vinculos de riesgo, intensidad relacional, aislamiento y espacios comunitarios posibles." : "",
+      index === 1 && familyHealth.detected?.length ? "Separar necesidades de salud de cada miembro familiar y traducirlas en apoyos, prevencion y coordinacion." : "",
+      index === 2 ? "Pactar objetivos pequenos, medibles y revisables con responsables, recursos, plazos y criterios de prioridad." : "",
+      index === 2 && resourceNames.length ? `Activar o valorar recursos priorizados: ${resourceNames.slice(0, 4).join(", ")}.` : "",
+      index === 2 && needsHealth ? "Incorporar educacion para la salud: comprension, autocuidado posible, reduccion de danos, adherencia indicada y comunicacion clara." : "",
+      index === 2 && needsDependency ? "Revisar reconocimiento de dependencia/discapacidad, apoyos efectivos, accesibilidad, cuidados y respiro familiar." : "",
+      index === 2 && needsEmployment ? "Disenar itinerario sociolaboral progresivo: estabilizacion, competencias, formacion, intermediacion y seguimiento." : "",
+      index === 3 ? "Revisar indicadores, reformular hipotesis y documentar cambios en autonomia, red, salud cotidiana y acceso a derechos." : "",
+      index === 3 && highPriority ? "Mantener plan de contingencia y coordinacion interprofesional hasta estabilizar riesgos principales." : "",
+      index === 3 ? "Cerrar o reformular el plan con participacion de la persona usuaria, registrando avances, barreras y nuevas derivaciones." : ""
+    ]);
     return {
       ...phase,
+      timeframe: phaseMeta[index]?.timeframe || "Plazo ajustable",
+      focus: phaseMeta[index]?.focus || "intervencion socioeducativa",
       actions: phaseActions
     };
   });
