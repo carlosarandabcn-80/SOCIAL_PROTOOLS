@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Laboratorio de Intervención Psicosocial</title>
+    <link rel="icon" type="image/png" href="assets/social-tools-logo.png" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+    <div class="brand-intro" aria-hidden="true">
+      <div class="brand-intro-card">
+        <img src="assets/social-tools-logo.png" alt="" />
+        <span></span>
+      </div>
+    </div>
+    <main id="main-content" class="app-shell" tabindex="-1">
+      <header class="app-header">
+        <div class="brand-lockup">
+          <img class="app-logo" src="assets/social-tools-logo.png" alt="Social Tools" />
+          <div class="brand-title">
+            <h1>Laboratorio de Intervención Psicosocial</h1>
+            <div class="brand-signal" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        </div>
+      </header>
+      <p id="data-source" class="source-line">Base CIE-11 cargando...</p>
+
+      <nav class="stepper" aria-label="Flujo principal">
+        <button type="button" class="active" data-step="1">
+          <span>1</span>
+          Identificacion integral
+        </button>
+        <button type="button" data-step="2">
+          <span>2</span>
+          Herramientas
+        </button>
+        <button type="button" data-step="3">
+          <span>3</span>
+          Informe y resultado
+        </button>
+      </nav>
+
+      <section class="workspace">
+        <section class="main-panel">
+          <form id="case-form">
+            <section class="step-panel active" data-panel="1">
+              <div class="section-heading">
+                <p class="overline">Paso 1</p>
+                <h2>Identificacion integral del caso</h2>
+                <p>
+                  Ficha unica, jerarquica y preparada para casos reales: identidad, familia, diagnostico CIE-11, cautela clinica, territorio y contexto socioeducativo.
+                </p>
+              </div>
+
+              <article class="subsection" id="section-identidad">
+                <div class="subsection-title">
+                  <span>1.1</span>
+                  <div>
+                    <h3>Persona usuaria y privacidad</h3>
+                    <p>Trabaja con identidad completa o con codigo anonimizado.</p>
+                  </div>
+                </div>
+                <div class="grid two">
+                  <div class="field">
+                    <label for="case-name">Nombre y apellidos</label>
+                    <input id="case-name" type="text" autocomplete="off" placeholder="Nombre de la persona" />
+                  </div>
+                  <div class="field">
+                    <label for="case-code">Codigo privado</label>
+                    <input id="case-code" type="text" autocomplete="off" placeholder="CASO-001" />
+                  </div>
+                </div>
+                <label class="check-row">
+                  <input id="privacy-mode" type="checkbox" />
+                  <span>Ocultar identidad y usar solo codigo en resultado</span>
+                </label>
+                <div class="grid three">
+                  <div class="field age-select-field">
+                    <label for="case-age">Edad</label>
+                    <select id="case-age" aria-label="Edad de la persona"></select>
+                    <p class="field-hint">Seleccion discreta para preservar una ficha limpia.</p>
+                  </div>
+                  <div class="field">
+                    <label for="case-pronouns">Genero / pronombres</label>
+                    <input id="case-pronouns" type="text" placeholder="Opcional" />
+                  </div>
+                  <div class="field">
+                    <label for="case-reference">Profesional referente</label>
+                    <input id="case-reference" type="text" placeholder="Opcional" />
+                  </div>
+                </div>
+                <div class="grid four origin-grid">
+                  <div class="field">
+                    <label for="case-origin-country">Pais de origen</label>
+                    <input id="case-origin-country" type="text" list="origin-countries" placeholder="Ej.: Espana, Marruecos, Colombia..." />
+                    <datalist id="origin-countries">
+                      <option value="Espana"></option>
+                      <option value="Marruecos"></option>
+                      <option value="Colombia"></option>
+                      <option value="Venezuela"></option>
+                      <option value="Ecuador"></option>
+                      <option value="Peru"></option>
+                      <option value="Argentina"></option>
+                      <option value="Bolivia"></option>
+                      <option value="Rumania"></option>
+                      <option value="Ucrania"></option>
+                      <option value="Senegal"></option>
+                      <option value="Mali"></option>
+                      <option value="Nigeria"></option>
+                      <option value="Siria"></option>
+                    </datalist>
+                  </div>
+                  <div class="field">
+                    <label for="case-national-status">Nacionalidad / origen juridico</label>
+                    <select id="case-national-status">
+                      <option value="">Sin registrar</option>
+                      <option value="espanola">Nacionalidad espanola</option>
+                      <option value="ue">Ciudadania UE</option>
+                      <option value="extracomunitaria">Nacionalidad extracomunitaria</option>
+                      <option value="doble">Doble nacionalidad</option>
+                      <option value="apatrida">Apatrida</option>
+                      <option value="proteccion_internacional">Proteccion internacional / refugio</option>
+                      <option value="solicitante_asilo">Solicitante de asilo</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="case-language">Idioma habitual</label>
+                    <input id="case-language" type="text" placeholder="Ej.: espanol, arabe, frances..." />
+                  </div>
+                  <div class="field">
+                    <label for="case-years-spain">Tiempo en Espana</label>
+                    <select id="case-years-spain">
+                      <option value="">Sin registrar</option>
+                      <option value="nacimiento">Desde nacimiento</option>
+                      <option value="menos_6_meses">Menos de 6 meses</option>
+                      <option value="6_24_meses">6 meses - 2 anos</option>
+                      <option value="2_5_anos">2 - 5 anos</option>
+                      <option value="mas_5_anos">Mas de 5 anos</option>
+                      <option value="transito">En transito / sin arraigo territorial</option>
+                    </select>
+                  </div>
+                </div>
+              </article>
+
+              <article class="subsection" id="section-familia">
+                <div class="subsection-title">
+                  <span>1.2</span>
+                  <div>
+                    <h3>Situacion familiar base</h3>
+                    <p>Estos datos alimentan el genograma editable del paso 2.</p>
+                  </div>
+                </div>
+                <label class="check-row prominent">
+                  <input id="no-family-network" type="checkbox" />
+                  <span>Sin red familiar / sin red de apoyo identificada</span>
+                </label>
+                <div class="family-checks" id="family-checks">
+                  <label><input type="checkbox" data-role="padre" /> Padre</label>
+                  <label><input type="checkbox" data-role="madre" /> Madre</label>
+                  <label><input type="checkbox" data-role="abuelos" /> Abuelos/as</label>
+                  <label><input type="checkbox" data-role="hijos" /> Hijos/as</label>
+                  <label><input type="checkbox" data-role="pareja" /> Pareja</label>
+                  <label><input type="checkbox" data-role="hermanos" /> Hermanos/as</label>
+                  <label><input type="checkbox" data-role="tutores" /> Tutores/as</label>
+                  <label><input type="checkbox" data-role="otros" /> Otros apoyos</label>
+                </div>
+              </article>
+
+              <article class="subsection" id="section-diagnostico">
+                <div class="subsection-title">
+                  <span>1.3</span>
+                  <div>
+                    <h3>Diagnostico CIE-11 y cautela profesional</h3>
+                    <p>Selecciona cualquier patologia CIE-11 y distingue confirmacion clinica de indicios.</p>
+                  </div>
+                </div>
+                <div class="field search-group">
+                  <label for="icd-search">Patologia CIE-11</label>
+                  <input
+                    id="icd-search"
+                    type="search"
+                    autocomplete="off"
+                    placeholder="Codigo o texto: 6B00, ansiedad, 6D80, dolor..."
+                  />
+                  <div id="icd-results" class="search-results" role="listbox"></div>
+                  <p id="selected-diagnosis" class="quiet-text">Ninguna patologia seleccionada.</p>
+                </div>
+                <div class="dual-diagnosis-panel">
+                  <label class="check-row prominent">
+                    <input id="dual-diagnosis-enabled" type="checkbox" />
+                    <span>Patologia dual / diagnostico combinado</span>
+                  </label>
+                  <div id="dual-diagnosis-fields" class="dual-diagnosis-fields" hidden>
+                    <p class="quiet-text">
+                      Registra dos codigos CIE-11 cuando el caso combine, por ejemplo, salud mental y consumo de sustancias. Se integra con cautela en el informe.
+                    </p>
+                    <div class="grid two">
+                      <div class="field search-group dual-search-group">
+                        <label for="dual-icd-search-1">Codigo CIE-11 1</label>
+                        <input id="dual-icd-search-1" type="search" autocomplete="off" placeholder="Ej.: 6A70, depresion..." />
+                        <div id="dual-icd-results-1" class="search-results" role="listbox"></div>
+                        <p id="dual-selected-1" class="quiet-text">Primer codigo pendiente.</p>
+                      </div>
+                      <div class="field search-group dual-search-group">
+                        <label for="dual-icd-search-2">Codigo CIE-11 2</label>
+                        <input id="dual-icd-search-2" type="search" autocomplete="off" placeholder="Ej.: 6C40, consumo..." />
+                        <div id="dual-icd-results-2" class="search-results" role="listbox"></div>
+                        <p id="dual-selected-2" class="quiet-text">Segundo codigo pendiente.</p>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label for="dual-diagnosis-notes">Observaciones sobre patologia dual</label>
+                      <textarea id="dual-diagnosis-notes" rows="3" placeholder="Relacion funcional entre problemas de salud, consumo, apoyos, riesgos y derivaciones prudentes."></textarea>
+                    </div>
+                  </div>
+                </div>
+                <fieldset class="radio-grid">
+                  <legend>Estado del diagnostico clinico</legend>
+                  <label>
+                    <input type="radio" name="diagnosis-status" value="confirmado" />
+                    Confirmado por profesional sanitario
+                  </label>
+                  <label>
+                    <input type="radio" name="diagnosis-status" value="sin_confirmar" />
+                    Sin confirmar: presenta indicios
+                  </label>
+                  <label>
+                    <input type="radio" name="diagnosis-status" value="desconocido" />
+                    Informacion clinica no disponible
+                  </label>
+                </fieldset>
+                <div class="field">
+                  <label for="diagnosis-indications">Indicios observados o relatados</label>
+                  <textarea
+                    id="diagnosis-indications"
+                    rows="4"
+                    placeholder="Conductas observables, relato de la persona, dificultades funcionales, fuente de informacion..."
+                  ></textarea>
+                </div>
+              </article>
+
+              <article class="subsection" id="section-territorio">
+                <div class="subsection-title">
+                  <span>1.4</span>
+                  <div>
+                    <h3>Territorio y contexto socioeducativo</h3>
+                    <p>La ciudad activa recursos institucionales, ONG y tercer sector en el paso 2.</p>
+                  </div>
+                </div>
+                <div class="grid three">
+                  <div class="field">
+                    <label for="case-city">Ciudad</label>
+                    <select id="case-city">
+                      <option value="Madrid">Madrid</option>
+                      <option value="Barcelona">Barcelona</option>
+                      <option value="Sevilla">Sevilla</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="case-district">Barrio / distrito</label>
+                    <input id="case-district" type="text" placeholder="Opcional" />
+                  </div>
+                  <div class="field">
+                    <label for="case-housing">Situacion residencial</label>
+                    <select id="case-housing">
+                      <option value="">Sin registrar</option>
+                      <option value="estable">Vivienda estable</option>
+                      <option value="insegura">Vivienda insegura</option>
+                      <option value="habitacion">Habitacion / alquiler precario</option>
+                      <option value="sin_hogar">Sin hogar / riesgo residencial</option>
+                      <option value="institucional">Recurso residencial / institucional</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="case-context">Descripcion socioeducativa del caso</label>
+                  <textarea
+                    id="case-context"
+                    rows="7"
+                    spellcheck="true"
+                    placeholder="Convivencia, ingresos, empleo, estudios, dependencia, apoyos, barreras de acceso, redes, riesgos y factores de proteccion..."
+                  ></textarea>
+                </div>
+              </article>
+
+              <article class="subsection" id="section-reconocimientos">
+                <div class="subsection-title">
+                  <span>1.5</span>
+                  <div>
+                    <h3>Reconocimientos administrativos y apoyos formales</h3>
+                    <p>Registra certificados o grados reconocidos para ajustar gravedad, recursos y recomendaciones.</p>
+                  </div>
+                </div>
+                <div class="grid three">
+                  <label class="check-row inline-check">
+                    <input id="has-vulnerability-certificate" type="checkbox" />
+                    <span>Certificado / informe de vulnerabilidad</span>
+                  </label>
+                  <label class="check-row inline-check">
+                    <input id="has-disability" type="checkbox" />
+                    <span>Discapacidad reconocida</span>
+                  </label>
+                  <label class="check-row inline-check">
+                    <input id="has-dependency" type="checkbox" />
+                    <span>Dependencia reconocida</span>
+                  </label>
+                </div>
+                <div class="grid three">
+                  <div class="field">
+                    <label for="vulnerability-level">Nivel de vulnerabilidad</label>
+                    <select id="vulnerability-level">
+                      <option value="">Sin registrar</option>
+                      <option value="leve">Leve / preventiva</option>
+                      <option value="moderada">Moderada</option>
+                      <option value="grave">Grave</option>
+                      <option value="emergencia">Emergencia social</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="disability-percent">Porcentaje discapacidad</label>
+                    <input id="disability-percent" type="number" min="0" max="100" placeholder="33, 65..." />
+                  </div>
+                  <div class="field">
+                    <label for="dependency-grade">Grado de dependencia</label>
+                    <select id="dependency-grade">
+                      <option value="">Sin registrar</option>
+                      <option value="grado_i">Grado I - dependencia moderada</option>
+                      <option value="grado_ii">Grado II - dependencia severa</option>
+                      <option value="grado_iii">Grado III - gran dependencia</option>
+                      <option value="en_tramite">En tramite / pendiente</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="grid two">
+                  <div class="field">
+                    <label for="recognized-supports">Apoyos o prestaciones reconocidas</label>
+                    <textarea id="recognized-supports" rows="3" placeholder="Ayuda a domicilio, teleasistencia, prestacion, adaptaciones, apoyo escolar, etc."></textarea>
+                  </div>
+                  <div class="field">
+                    <label for="admin-notes">Observaciones administrativas</label>
+                    <textarea id="admin-notes" rows="3" placeholder="Fecha, entidad, documentos pendientes, barreras de acceso..."></textarea>
+                  </div>
+                </div>
+              </article>
+
+              <article class="subsection" id="section-perfil-social">
+                <div class="subsection-title">
+                  <span>1.6</span>
+                  <div>
+                    <h3>Situacion administrativa, empleo y estudios</h3>
+                    <p>Datos habituales en casos sociales vulnerables: residencia, trabajo, ingresos, cualificacion y barreras de acceso.</p>
+                  </div>
+                </div>
+                <div class="grid three">
+                  <div class="field">
+                    <label for="administrative-status">Situacion administrativa</label>
+                    <select id="administrative-status">
+                      <option value="">Sin registrar</option>
+                      <option value="nacionalidad_espanola">Nacionalidad espanola</option>
+                      <option value="ue_regular">Ciudadania UE / regular</option>
+                      <option value="regular">Regularizada</option>
+                      <option value="irregular">Situacion administrativa irregular</option>
+                      <option value="asilo">Solicitante de asilo / proteccion internacional</option>
+                      <option value="refugiada">Proteccion reconocida / refugiada</option>
+                      <option value="sin_documentacion">Sin documentacion suficiente</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="residence-permit">Permiso de residencia / trabajo</label>
+                    <select id="residence-permit">
+                      <option value="">Sin registrar</option>
+                      <option value="no_aplica">No aplica</option>
+                      <option value="vigente">Vigente</option>
+                      <option value="en_tramite">En tramite</option>
+                      <option value="caducado">Caducado</option>
+                      <option value="denegado">Denegado</option>
+                      <option value="sin_permiso">Sin permiso</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="employment-status">Situacion laboral</label>
+                    <select id="employment-status">
+                      <option value="">Sin registrar</option>
+                      <option value="empleo_estable">Empleo estable</option>
+                      <option value="empleo_precario">Empleo precario / temporal</option>
+                      <option value="desempleo">Desempleo</option>
+                      <option value="desempleo_larga_duracion">Desempleo de larga duracion</option>
+                      <option value="sin_prestacion">Desempleo sin prestacion</option>
+                      <option value="economia_informal">Economia informal / irregular</option>
+                      <option value="incapacidad">Incapacidad laboral / baja prolongada</option>
+                      <option value="estudiante">Estudiante</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="grid three">
+                  <div class="field">
+                    <label for="profession">Profesion u ocupacion habitual</label>
+                    <input id="profession" type="text" placeholder="Hosteleria, cuidados, construccion..." />
+                  </div>
+                  <div class="field">
+                    <label for="education-level">Nivel de estudios</label>
+                    <select id="education-level">
+                      <option value="">Sin registrar</option>
+                      <option value="sin_estudios">Sin estudios acreditados</option>
+                      <option value="primaria">Educacion primaria</option>
+                      <option value="secundaria">Educacion secundaria</option>
+                      <option value="fp">Formacion profesional</option>
+                      <option value="bachillerato">Bachillerato</option>
+                      <option value="universitarios">Estudios universitarios</option>
+                      <option value="no_homologados">Estudios no homologados</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="income-status">Ingresos / prestaciones</label>
+                    <select id="income-status">
+                      <option value="">Sin registrar</option>
+                      <option value="ingresos_estables">Ingresos estables</option>
+                      <option value="ingresos_bajos">Ingresos insuficientes</option>
+                      <option value="sin_ingresos">Sin ingresos</option>
+                      <option value="prestacion">Prestacion activa</option>
+                      <option value="prestacion_tramite">Prestacion en tramite</option>
+                      <option value="deudas">Deudas / embargos / gastos criticos</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="social-barriers">Barreras sociales o administrativas relevantes</label>
+                  <textarea id="social-barriers" rows="3" placeholder="Empadronamiento, idioma, brecha digital, homologacion, cargas familiares, transporte, discriminacion, documentacion pendiente..."></textarea>
+                </div>
+              </article>
+
+              <article class="subsection" id="section-salud-familiar">
+                <div class="subsection-title">
+                  <span>1.7</span>
+                  <div>
+                    <h3>Unidad familiar y patologias asociadas</h3>
+                    <p>Selecciona patologias o indicios por familiar. Se trasladan automaticamente al genograma y al informe.</p>
+                  </div>
+                </div>
+                <label class="check-row inline-check">
+                  <input id="include-prevention-program" type="checkbox" />
+                  <span>Incluir programa de prevencion primaria, secundaria y terciaria en el informe</span>
+                </label>
+                <div id="member-health-panel" class="member-health-panel"></div>
+                <div class="field">
+                  <label for="family-health-problems">Relato clinico-social complementario</label>
+                  <textarea
+                    id="family-health-problems"
+                    rows="6"
+                    placeholder="Ejemplo: Persona usuaria: adiccion a heroina, cannabis, insomnio, ansiedad, depresion. Padre: artrosis. Madre: ansiedad. Hermano: dependencia del alcohol..."
+                  ></textarea>
+                </div>
+              </article>
+            </section>
+
+            <section class="step-panel" data-panel="2">
+              <div class="section-heading">
+                <p class="overline">Paso 2</p>
+                <h2>Herramientas</h2>
+                <p>
+                  Genograma, sociograma y mapa de recursos para estudiar relaciones, apoyos, aislamiento y respuesta comunitaria.
+                </p>
+              </div>
+
+              <div class="visual-workbench">
+                <article class="genogram-card">
+                  <div class="panel-header">
+                    <div>
+                      <label class="tool-toggle">
+                        <input id="tool-genogram" type="checkbox" />
+                        <span>Aplica al caso</span>
+                      </label>
+                      <h3>Genograma interactivo</h3>
+                      <p id="family-count" class="quiet-text">0 personas</p>
+                    </div>
+                    <div class="button-row compact">
+                      <button id="open-family-dialog" class="secondary-action small" type="button">Anadir / editar</button>
+                      <button id="clear-family" class="secondary-action small" type="button">Limpiar</button>
+                    </div>
+                  </div>
+                  <div id="genogram" class="genogram" aria-label="Genograma relacional"></div>
+                  <div class="legend">
+                    <span><i class="dot support"></i>Apoyo</span>
+                    <span><i class="dot ambivalent"></i>Ambivalente</span>
+                    <span><i class="dot conflict"></i>Conflicto/riesgo</span>
+                    <span><i class="line broken"></i>Ausente/ruptura</span>
+                  </div>
+                </article>
+
+                <aside class="editor-card">
+                  <h3>Detalle seleccionado</h3>
+                  <p id="selected-member" class="quiet-text">Selecciona un nodo del genograma o anade un vinculo.</p>
+                  <div id="family-list" class="family-list"></div>
+                </aside>
+              </div>
+
+              <article class="sociogram-card">
+                <div class="panel-header">
+                  <div>
+                    <label class="tool-toggle">
+                      <input id="tool-sociogram" type="checkbox" />
+                      <span>Aplica al caso</span>
+                    </label>
+                    <h3>Sociograma interactivo</h3>
+                    <p id="sociogram-status" class="quiet-text">0 nodos sociales</p>
+                  </div>
+                  <div class="tool-actions">
+                    <button id="layout-sociogram" class="secondary-action small" type="button">Reorganizar</button>
+                    <button id="clear-sociogram" class="secondary-action small" type="button">Limpiar</button>
+                    <button id="add-social-node" class="secondary-action small" type="button">Anadir nodo</button>
+                  </div>
+                </div>
+                <div id="sociogram" class="sociogram" aria-label="Sociograma interactivo"></div>
+                <div class="sociogram-legend" aria-label="Leyenda de relaciones">
+                  <span><i class="legend-support"></i>Apoyo</span>
+                  <span><i class="legend-neutral"></i>Ambivalente</span>
+                  <span><i class="legend-risk"></i>Riesgo</span>
+                  <span><i class="legend-core"></i>Persona usuaria</span>
+                </div>
+                <div id="social-list" class="family-list"></div>
+              </article>
+
+              <article class="resources-card">
+                <div class="panel-header">
+                  <div>
+                    <label class="tool-toggle">
+                      <input id="tool-resource-map" type="checkbox" />
+                      <span>Aplica al caso</span>
+                    </label>
+                    <h3>Mapa de recursos por ciudad</h3>
+                    <p id="resource-count" class="quiet-text">0 recursos disponibles</p>
+                  </div>
+                  <div class="city-pills" id="resource-city-selector"></div>
+                </div>
+                <div id="resource-map" class="resource-map" aria-label="Mapa real de recursos por ciudad"></div>
+                <div id="resource-grid" class="resource-grid"></div>
+              </article>
+            </section>
+
+            <section class="step-panel" data-panel="3">
+              <div class="section-heading">
+                <p class="overline">Paso 3</p>
+                <h2>Informe y resultado</h2>
+                <p>
+                  Genera un informe profesional con lectura social, necesidades, recursos seleccionados, hoja de ruta e itinerario cauteloso de intervencion.
+                </p>
+              </div>
+
+              <div class="result-actions">
+                <button id="generate-result" class="primary-action" type="button">Generar informe</button>
+                <button id="export-pdf" class="secondary-action" type="button">Exportar PDF</button>
+              </div>
+
+              <section id="result-empty" class="empty-result">
+                <h3>Resultado pendiente</h3>
+                <p>Completa la identificacion integral y pulsa generar para construir el informe.</p>
+              </section>
+
+              <section id="result-report" class="report hidden">
+                <article id="validation-panel" class="validation-panel hidden">
+                  <h3>Validacion automatica</h3>
+                  <ul id="validation-list"></ul>
+                </article>
+
+                <article class="report-hero">
+                  <div class="report-brand">
+                    <img src="assets/social-tools-logo.png" alt="Social Tools" />
+                    <div>
+                      <p class="overline">Informe de orientacion socioeducativa</p>
+                      <h3 id="report-title">Caso</h3>
+                    </div>
+                  </div>
+                  <strong id="report-priority">Prioridad: 0</strong>
+                </article>
+
+                <article class="report-section">
+                  <h3>Ficha social transcrita</h3>
+                  <div id="social-profile-report" class="profile-report"></div>
+                </article>
+
+                <div class="metrics" id="metric-grid"></div>
+
+                <article class="report-section">
+                  <h3>Lectura socioeducativa</h3>
+                  <p id="report-interpretation"></p>
+                </article>
+
+                <article class="report-section">
+                  <h3>Informe provisional integrado</h3>
+                  <div id="professional-synthesis" class="professional-synthesis"></div>
+                </article>
+
+                <article class="report-section">
+                  <h3>Propuesta de intervención psicosocial</h3>
+                  <div id="intervention-program" class="intervention-program"></div>
+                </article>
+
+                <div class="grid two">
+                  <article class="report-section">
+                    <h3>Necesidades detectadas</h3>
+                    <ul id="report-needs"></ul>
+                  </article>
+                  <article class="report-section">
+                    <h3>Factores de riesgo y proteccion</h3>
+                    <div class="risk-grid">
+                      <div>
+                        <h4>Riesgo</h4>
+                        <ul id="report-risks"></ul>
+                      </div>
+                      <div>
+                        <h4>Proteccion</h4>
+                        <ul id="report-protections"></ul>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+
+                <article class="report-section">
+                  <h3>Programas, planes e itinerario</h3>
+                  <div id="roadmap" class="roadmap"></div>
+                </article>
+
+                <article class="report-section">
+                  <h3>Alineación académica y fuentes</h3>
+                  <div id="academic-basis" class="academic-basis"></div>
+                  <div id="evidence-sources" class="evidence-sources"></div>
+                </article>
+
+                <article class="report-section" id="family-health-section">
+                  <h3>Unidad familiar: CIE-11, necesidades y prevencion</h3>
+                  <div id="family-health-report" class="family-health-report"></div>
+                </article>
+
+                <article class="report-section">
+                  <h3>Recursos seleccionados</h3>
+                  <div id="selected-resources-report" class="selected-resources"></div>
+                </article>
+              </section>
+
+              <article class="report-section educational-sources">
+                <div>
+                  <p class="overline">Marco educativo y fuentes</p>
+                  <h3>Entorno academico UNIR</h3>
+                  <p>
+                    Aplicacion realizada en un entorno educativo para la asignatura Salud, Dependencia y Vulnerabilidad Social. Su salida es orientativa, provisional y debe contrastarse con entrevista, documentacion y criterio profesional.
+                  </p>
+                </div>
+                <div class="source-mini-grid">
+                  <a href="https://www.who.int/health-topics/social-determinants-of-health" target="_blank" rel="noopener">OMS: determinantes sociales</a>
+                  <a href="https://www.who.int/standards/classifications/classification-of-diseases" target="_blank" rel="noopener">OMS: CIE-11</a>
+                  <a href="https://www.who.int/standards/classifications/international-classification-of-functioning-disability-and-health" target="_blank" rel="noopener">OMS: CIF/ICF</a>
+                  <a href="https://www.boe.es/buscar/act.php?id=BOE-A-2006-21990" target="_blank" rel="noopener">BOE: Ley 39/2006</a>
+                  <a href="https://www.boe.es/buscar/doc.php?id=BOE-A-2011-3174" target="_blank" rel="noopener">BOE: RD 174/2011</a>
+                  <a href="https://www.sanidad.gob.es/areas/calidadAsistencial/estrategias/saludMental/home.htm" target="_blank" rel="noopener">Ministerio de Sanidad</a>
+                </div>
+              </article>
+            </section>
+
+            <nav class="form-nav" aria-label="Navegacion del formulario">
+              <button id="prev-step" class="secondary-action" type="button">Anterior</button>
+              <button id="next-step" class="primary-action" type="button">Siguiente</button>
+            </nav>
+          </form>
+        </section>
+
+        <aside class="summary-area" aria-label="Panel de trabajo">
+          <section class="surface sidebar-menu" aria-label="Menu del caso">
+            <p class="overline">Panel de trabajo</p>
+            <h2>Menu del caso</h2>
+            <details>
+              <summary>
+                <span class="menu-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Z"></path><path d="M4 21a8 8 0 0 1 16 0"></path><path d="M18 4.5h3"></path><path d="M19.5 3v3"></path></svg>
+                </span>
+                <span class="menu-title">1. Identificacion</span>
+              </summary>
+              <button type="button" data-jump-step="1" data-jump-target="section-identidad">Persona y privacidad</button>
+              <button type="button" data-jump-step="1" data-jump-target="section-familia">Familia base</button>
+              <button type="button" data-jump-step="1" data-jump-target="section-diagnostico">CIE-11</button>
+              <button type="button" data-jump-step="1" data-jump-target="section-territorio">Territorio</button>
+              <button type="button" data-jump-step="1" data-jump-target="section-reconocimientos">Reconocimientos</button>
+              <button type="button" data-jump-step="1" data-jump-target="section-perfil-social">Perfil social</button>
+              <button type="button" data-jump-step="1" data-jump-target="section-salud-familiar">Salud familiar</button>
+            </details>
+            <details>
+              <summary>
+                <span class="menu-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M4 7h16"></path><path d="M4 17h16"></path><path d="M8 3v8"></path><path d="M16 13v8"></path><circle cx="8" cy="7" r="2.5"></circle><circle cx="16" cy="17" r="2.5"></circle></svg>
+                </span>
+                <span class="menu-title">2. Herramientas</span>
+              </summary>
+              <button type="button" data-jump-step="2" data-jump-target="genogram">Genograma</button>
+              <button type="button" data-jump-step="2" data-jump-target="sociogram">Sociograma</button>
+              <button type="button" data-jump-step="2" data-jump-target="resource-grid">Mapa de recursos</button>
+            </details>
+            <details>
+              <summary>
+                <span class="menu-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"></path><path d="M14 3v5h5"></path><path d="M10 13h6"></path><path d="M10 17h4"></path></svg>
+                </span>
+                <span class="menu-title">3. Informe</span>
+              </summary>
+              <button type="button" data-jump-step="3" data-jump-target="result-report">Informe en web</button>
+              <button type="button" data-jump-step="3" data-jump-target="export-pdf">Exportacion PDF</button>
+            </details>
+          </section>
+
+          <section class="surface data-warning">
+            <p class="overline">Privacidad de la sesion</p>
+            <h2>No almacena datos</h2>
+            <p>La app trabaja en esta sesion local. Exporta el informe a PDF al terminar cada caso si necesitas conservarlo.</p>
+          </section>
+
+          <section class="surface reset-surface">
+            <button id="reset-button" class="danger-action" type="button">Borrar todo / reset</button>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <section class="accessibility-widget" aria-label="Accesibilidad digital">
+      <button id="accessibility-toggle" class="accessibility-toggle" type="button" aria-expanded="false" aria-controls="accessibility-panel" title="Accesibilidad">
+        <span aria-hidden="true">A11Y</span>
+        <span class="sr-only">Abrir accesibilidad digital</span>
+      </button>
+      <div id="accessibility-panel" class="accessibility-panel hidden">
+        <strong>Ajustes de accesibilidad</strong>
+        <p>Controles para baja vision, sensibilidad visual, lectura prolongada y navegacion por teclado.</p>
+        <span class="access-group-label">Vision</span>
+        <button type="button" data-accessibility="contrast">Alto contraste</button>
+        <button type="button" data-accessibility="underline">Subrayar enlaces</button>
+        <span class="access-group-label">Lectura</span>
+        <button type="button" data-accessibility="font-normal">Normal</button>
+        <button type="button" data-accessibility="font-plus">Grande</button>
+        <button type="button" data-accessibility="spacing">Espaciado</button>
+        <button type="button" data-accessibility="focus">Foco lector</button>
+        <span class="access-group-label">Movimiento</span>
+        <button type="button" data-accessibility="motion">Reducir animacion</button>
+        <button type="button" data-accessibility="reset">Restablecer</button>
+      </div>
+    </section>
+
+    <footer class="app-footer-signature">Carlos Aranda Sánchez (2026).</footer>
+
+    <dialog id="family-dialog" class="family-dialog">
+      <form method="dialog">
+        <div class="dialog-header">
+          <div>
+            <p class="overline">Editor familiar</p>
+            <h2 id="family-dialog-title">Anadir vinculo</h2>
+          </div>
+          <button id="close-family-dialog" class="secondary-action small" value="close">Cerrar</button>
+        </div>
+
+        <input id="family-edit-id" type="hidden" />
+
+        <div class="family-editor">
+          <div class="grid three">
+            <div class="field">
+              <label for="family-generation">Generacion</label>
+              <select id="family-generation">
+                <option value="abuelos">Generacion 1: abuelos/as</option>
+                <option value="progenitores">Generacion 2: padres, madres y tutores</option>
+                <option value="persona">Persona, pareja y hermanos/as</option>
+                <option value="descendientes">Generacion 3: hijos/as</option>
+                <option value="red">Red no familiar</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="family-role">Parentesco / rol</label>
+              <select id="family-role">
+                <option value="padre">Padre</option>
+                <option value="madre">Madre</option>
+                <option value="abuelo">Abuelo</option>
+                <option value="abuela">Abuela</option>
+                <option value="hijo">Hijo</option>
+                <option value="hija">Hija</option>
+                <option value="hermano">Hermano</option>
+                <option value="hermana">Hermana</option>
+                <option value="pareja">Pareja</option>
+                <option value="tutor">Tutor/a</option>
+                <option value="profesional">Profesional/recurso</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="family-kinship">Tipo de vinculo</label>
+              <select id="family-kinship">
+                <option value="biologico">Biologico</option>
+                <option value="adoptivo">Adoptivo</option>
+                <option value="acogida">Acogida</option>
+                <option value="politico">Politico / reconstituido</option>
+                <option value="tutelar">Tutelar</option>
+                <option value="social">Social no familiar</option>
+                <option value="desconocido">Desconocido</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid three">
+            <div class="field">
+              <label for="family-name">Nombre o codigo</label>
+              <input id="family-name" type="text" placeholder="Madre, A1, hija mayor..." />
+            </div>
+            <div class="field">
+              <label for="family-cohabitation">Convivencia/contacto</label>
+              <select id="family-cohabitation">
+                <option value="convive">Convive</option>
+                <option value="no_convive">No convive</option>
+                <option value="contacto_esporadico">Contacto esporadico</option>
+                <option value="sin_contacto">Sin contacto</option>
+                <option value="fallecido">Fallecido/a</option>
+                <option value="desconocido">Desconocido</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="family-relation">Linea relacional</label>
+              <select id="family-relation">
+                <option value="apoyo_fuerte">Apoyo fuerte</option>
+                <option value="apoyo">Apoyo</option>
+                <option value="ambivalente">Ambivalente</option>
+                <option value="conflictiva">Conflictiva</option>
+                <option value="riesgo">Riesgo</option>
+                <option value="ausente">Ausente / ruptura</option>
+                <option value="desconocida">Desconocida</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="family-strength">Intensidad del vinculo</label>
+            <input id="family-strength" type="range" min="0" max="100" value="60" />
+          </div>
+
+          <div class="field">
+            <label for="family-notes">Caracteristicas relevantes</label>
+            <textarea
+              id="family-notes"
+              rows="4"
+              placeholder="Cuidados, dependencia, conflicto, apoyo economico, contacto, violencia, distancia, disponibilidad..."
+            ></textarea>
+          </div>
+
+          <button id="save-family-member" class="primary-action" type="button">Guardar vinculo</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="social-dialog" class="family-dialog">
+      <form method="dialog">
+        <div class="dialog-header">
+          <div>
+            <p class="overline">Sociograma</p>
+            <h2 id="social-dialog-title">Anadir nodo social</h2>
+          </div>
+          <button class="secondary-action small" value="close">Cerrar</button>
+        </div>
+
+        <input id="social-edit-id" type="hidden" />
+        <div class="family-editor">
+          <div class="grid three">
+            <div class="field">
+              <label for="social-name">Nombre o recurso</label>
+              <input id="social-name" type="text" placeholder="Amistad, vecino, centro, recurso..." />
+            </div>
+            <div class="field">
+              <label for="social-type">Tipo de nodo</label>
+              <select id="social-type">
+                <option value="amistad">Amistad</option>
+                <option value="vecinal">Vecinal</option>
+                <option value="comunitario">Comunitario</option>
+                <option value="institucional">Institucional</option>
+                <option value="laboral">Laboral/formativo</option>
+                <option value="riesgo">Riesgo</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="social-valence">Calidad del vinculo</label>
+              <select id="social-valence">
+                <option value="support">Apoyo</option>
+                <option value="neutral">Neutral</option>
+                <option value="risk">Riesgo</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="social-strength">Intensidad</label>
+            <input id="social-strength" type="range" min="0" max="100" value="60" />
+          </div>
+          <div class="field">
+            <label for="social-notes">Observaciones</label>
+            <textarea id="social-notes" rows="3" placeholder="Disponibilidad, frecuencia, apoyo, conflicto, barreras..."></textarea>
+          </div>
+          <button id="save-social-node" class="primary-action" type="button">Guardar nodo social</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="static-engine.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

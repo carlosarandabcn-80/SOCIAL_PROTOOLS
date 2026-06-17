@@ -53,13 +53,13 @@ Este proyecto funciona como aplicacion Node local. Para publicarlo en GitHub:
 
 ## GitHub Pages
 
-La carpeta `docs/` contiene una version estatica para GitHub Pages. Se genera con:
+La raiz del repositorio y la carpeta `docs/` contienen una version estatica para GitHub Pages. Se genera con:
 
 ```powershell
 npm run build:pages
 ```
 
-En GitHub Pages configura la rama `main` y la carpeta `/docs`. La URL publica queda en:
+En GitHub Pages configura la rama `main` y la carpeta `/`. La URL publica queda en:
 
 ```text
 https://carlosarandabcn-80.github.io/SOCIAL_PROTOOLS/

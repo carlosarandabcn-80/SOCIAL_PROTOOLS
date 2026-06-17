@@ -50,15 +50,20 @@ function buildIndex() {
     .replace('    <script src="app.js"></script>', '    <script src="static-engine.js"></script>\n    <script src="app.js"></script>');
 }
 
-cleanDocs();
-write("docs/index.html", buildIndex());
-write("docs/app.js", fs.readFileSync(path.join(FRONTEND, "app.js"), "utf8"));
-write("docs/styles.css", fs.readFileSync(path.join(FRONTEND, "styles.css"), "utf8"));
-write("docs/static-engine.js", buildStaticEngine());
-write("docs/.nojekyll", "");
+function writeStaticTarget(prefix) {
+  write(path.join(prefix, "index.html"), buildIndex());
+  write(path.join(prefix, "app.js"), fs.readFileSync(path.join(FRONTEND, "app.js"), "utf8"));
+  write(path.join(prefix, "styles.css"), fs.readFileSync(path.join(FRONTEND, "styles.css"), "utf8"));
+  write(path.join(prefix, "static-engine.js"), buildStaticEngine());
+  write(path.join(prefix, ".nojekyll"), "");
 
-for (const file of fs.readdirSync(path.join(FRONTEND, "assets"))) {
-  copyFile(path.join(FRONTEND, "assets", file), path.join(DOCS, "assets", file));
+  for (const file of fs.readdirSync(path.join(FRONTEND, "assets"))) {
+    copyFile(path.join(FRONTEND, "assets", file), path.join(ROOT, prefix, "assets", file));
+  }
 }
 
-console.log("GitHub Pages build generated in docs/");
+cleanDocs();
+writeStaticTarget("docs");
+writeStaticTarget(".");
+
+console.log("GitHub Pages build generated in docs/ and repository root.");
