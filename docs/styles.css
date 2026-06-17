@@ -1599,6 +1599,7 @@ svg text {
 }
 
 .roadmap-step strong {
+  display: block;
   color: var(--cyan);
 }
 
