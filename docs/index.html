@@ -6,20 +6,20 @@
     <title>Laboratorio de Intervención Psicosocial</title>
     <link rel="icon" type="image/png" href="assets/social-tools-logo.png" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="styles.css?v=20260617-accessibility-symbol" />
+    <link rel="stylesheet" href="styles.css?v=20260617-audit-polish" />
   </head>
   <body>
     <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
     <div class="brand-intro" aria-hidden="true">
       <div class="brand-intro-card">
-        <img class="intro-mark" src="assets/social-tools-logo.png?v=20260617-accessibility-symbol" alt="" />
+        <img class="intro-mark" src="assets/social-tools-logo.png?v=20260617-audit-polish" alt="" />
         <span></span>
       </div>
     </div>
     <main id="main-content" class="app-shell" tabindex="-1">
       <header class="app-header">
         <div class="brand-lockup">
-          <img class="app-logo" src="assets/social-tools-wordmark.png?v=20260617-accessibility-symbol" alt="Social Protools" />
+          <img class="app-logo" src="assets/social-tools-wordmark.png?v=20260617-audit-polish" alt="Social Protools" />
           <div class="brand-title">
             <h1>Laboratorio de Intervención Psicosocial</h1>
             <div class="brand-signal" aria-hidden="true">
@@ -81,6 +81,34 @@
                   <input id="privacy-mode" type="checkbox" />
                   <span>Ocultar identidad y usar solo codigo en resultado</span>
                 </label>
+                <div class="grid three ethics-grid">
+                  <label class="check-row inline-check ethics-check">
+                    <input id="informed-consent" type="checkbox" />
+                    <span>Consentimiento informado / uso educativo anonimizado</span>
+                  </label>
+                  <div class="field">
+                    <label for="participation-level">Participacion de la persona usuaria</label>
+                    <select id="participation-level">
+                      <option value="">Sin registrar</option>
+                      <option value="alta">Participacion activa en el plan</option>
+                      <option value="media">Participacion parcial o intermitente</option>
+                      <option value="baja">Participacion limitada / requiere apoyos</option>
+                      <option value="no_localizada">No localizada o sin contacto suficiente</option>
+                      <option value="rechazo">Rechaza intervencion en este momento</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="case-urgency">Urgencia social inicial</label>
+                    <select id="case-urgency">
+                      <option value="">Sin registrar</option>
+                      <option value="sin_urgencia">Sin urgencia inmediata</option>
+                      <option value="urgencia_social">Urgencia social 24-72 horas</option>
+                      <option value="riesgo_residencial">Riesgo residencial / perdida de vivienda</option>
+                      <option value="violencia_desproteccion">Violencia, desproteccion o riesgo familiar</option>
+                      <option value="riesgo_sanitario_emocional">Riesgo sanitario o emocional relevante</option>
+                    </select>
+                  </div>
+                </div>
                 <div class="grid three">
                   <div class="field age-select-field">
                     <label for="case-age">Edad</label>
@@ -243,6 +271,7 @@
                   <div class="field">
                     <label for="case-city">Ciudad</label>
                     <select id="case-city">
+                      <option value="">Seleccionar ciudad</option>
                       <option value="Madrid">Madrid</option>
                       <option value="Barcelona">Barcelona</option>
                       <option value="Sevilla">Sevilla</option>
@@ -561,7 +590,7 @@
 
                 <article class="report-hero">
                   <div class="report-brand">
-                    <img src="assets/social-tools-wordmark.png?v=20260617-accessibility-symbol" alt="Social Protools" />
+                    <img src="assets/social-tools-wordmark.png?v=20260617-audit-polish" alt="Social Protools" />
                     <div>
                       <p class="overline">Informe de orientacion socioeducativa</p>
                       <h3 id="report-title">Caso</h3>
@@ -717,7 +746,7 @@
 
     <section class="accessibility-widget" aria-label="Accesibilidad digital">
       <button id="accessibility-toggle" class="accessibility-toggle" type="button" aria-expanded="false" aria-controls="accessibility-panel" title="Accesibilidad">
-        <img src="assets/accessibility-universal.svg?v=20260617-accessibility-symbol" alt="" aria-hidden="true" />
+        <img src="assets/accessibility-universal.svg?v=20260617-audit-polish" alt="" aria-hidden="true" />
         <span class="sr-only">Abrir accesibilidad digital</span>
       </button>
       <div id="accessibility-panel" class="accessibility-panel hidden">
@@ -894,7 +923,7 @@
     </dialog>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="static-engine.js?v=20260617-accessibility-symbol"></script>
-    <script src="app.js?v=20260617-accessibility-symbol"></script>
+    <script src="static-engine.js?v=20260617-audit-polish"></script>
+    <script src="app.js?v=20260617-audit-polish"></script>
   </body>
 </html>

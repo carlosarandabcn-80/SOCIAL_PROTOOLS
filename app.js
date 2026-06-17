@@ -408,7 +408,7 @@ function compactParts(parts) {
 }
 
 function cityValue() {
-  return el("#case-city").value || "Madrid";
+  return el("#case-city").value || "";
 }
 
 function getDiagnosisStatusLabel() {
@@ -448,7 +448,8 @@ function setStep(step) {
     panel.classList.toggle("active", Number(panel.dataset.panel) === state.currentStep);
   });
   el("#prev-step").disabled = state.currentStep === 1;
-  el("#next-step").textContent = state.currentStep === 3 ? "Ver informe" : "Siguiente";
+  el("#next-step").textContent =
+    state.currentStep === 3 ? "Generar informe" : state.currentStep === 2 ? "Ir a informe" : "Siguiente";
   if (state.currentStep === 2) {
     renderGenogram();
     renderSociogram();
@@ -538,7 +539,7 @@ function updateSummary() {
     ]) || "0"
   );
   setSummary("#summary-status", getDiagnosisStatusLabel());
-  setSummary("#summary-city", cityValue());
+  setSummary("#summary-city", cityValue() || "0");
   setSummary(
     "#summary-social",
     compactParts([
@@ -605,6 +606,16 @@ function setVariable(key, severity, observation = "") {
   appendObservation(key, observation);
 }
 
+function getEthicalFrameData() {
+  return {
+    consentAcknowledged: Boolean(el("#informed-consent")?.checked),
+    participationLevel: el("#participation-level")?.value || "",
+    participationLevelLabel: selectedLabel("#participation-level"),
+    urgency: el("#case-urgency")?.value || "",
+    urgencyLabel: selectedLabel("#case-urgency")
+  };
+}
+
 function getSocialProfileData() {
   return {
     administrativeStatus: el("#administrative-status")?.value || "",
@@ -659,6 +670,7 @@ function recalculateVariables() {
   );
   const housing = el("#case-housing")?.value || "";
   const profile = getSocialProfileData();
+  const ethicalFrame = getEthicalFrameData();
   const issueCount = familyHealthIssues().length;
 
   const dualCount = selectedDualDiagnoses().length;
@@ -738,6 +750,30 @@ function recalculateVariables() {
 
   if (profile.barriers) {
     setVariable("vulnerabilidad", 58, "Constan barreras sociales o administrativas expresadas en la ficha.");
+  }
+
+  if (["urgencia_social", "riesgo_residencial", "violencia_desproteccion", "riesgo_sanitario_emocional"].includes(ethicalFrame.urgency)) {
+    const severity = {
+      urgencia_social: 78,
+      riesgo_residencial: 84,
+      violencia_desproteccion: 92,
+      riesgo_sanitario_emocional: 86
+    }[ethicalFrame.urgency];
+    setVariable("vulnerabilidad", severity, "La ficha registra urgencia social inicial y requiere priorizacion, contraste profesional y plan de seguridad.");
+    if (ethicalFrame.urgency === "riesgo_residencial") {
+      setVariable("situacionEconomica", 72, "La urgencia residencial compromete estabilidad material y continuidad del acompanamiento.");
+    }
+    if (ethicalFrame.urgency === "violencia_desproteccion") {
+      setVariable("contextoFamiliar", 82, "La posible violencia o desproteccion exige cautela, circuito profesional y analisis de seguridad.");
+      setVariable("redSocial", 74, "La seguridad relacional debe evaluarse antes de activar apoyos informales.");
+    }
+    if (ethicalFrame.urgency === "riesgo_sanitario_emocional") {
+      setVariable("salud", 78, "El riesgo sanitario o emocional requiere coordinacion prudente con recursos competentes.");
+    }
+  }
+
+  if (["baja", "no_localizada", "rechazo"].includes(ethicalFrame.participationLevel)) {
+    setVariable("redSocial", ethicalFrame.participationLevel === "rechazo" ? 58 : 64, "La participacion limitada exige adaptar vinculo, tiempos, comunicacion y consentimiento.");
   }
 
   syncRecognitionsToVariables();
@@ -1458,6 +1494,7 @@ function renderResourceCities() {
     button.type = "button";
     button.addEventListener("click", () => {
       el("#case-city").value = city;
+      pruneSelectedResourcesForCity(city);
       renderResources();
       updateSummary();
     });
@@ -1581,6 +1618,16 @@ function renderResourceMap(resources) {
   }
 
   const city = cityValue();
+  if (!city) {
+    if (resourceMapInstance) {
+      resourceMapInstance.remove();
+      resourceMapInstance = null;
+      resourceMarkerLayer = null;
+    }
+    mapNode.innerHTML = `<div class="tool-disabled">Selecciona una ciudad en el paso 1 para activar el mapa territorial de recursos.</div>`;
+    return;
+  }
+
   const center = cityCenters[city] || cityCenters.Madrid;
   if (!window.L) {
     if (resourceMapInstance) {
@@ -1647,11 +1694,17 @@ function renderResourceMap(resources) {
 function renderResources() {
   recalculateVariables();
   renderResourceCities();
-  const resources = [...(state.resources[cityValue()] || [])].sort((a, b) => resourceScore(b) - resourceScore(a));
+  const city = cityValue();
+  pruneSelectedResourcesForCity(city);
+  const resources = city ? [...(state.resources[city] || [])].sort((a, b) => resourceScore(b) - resourceScore(a)) : [];
   const grid = el("#resource-grid");
   clearNode(grid);
-  el("#resource-count").textContent = `${resources.length} recursos disponibles en ${cityValue()}`;
+  el("#resource-count").textContent = city ? `${resources.length} recursos disponibles en ${city}` : "Selecciona ciudad";
   renderResourceMap(resources);
+  if (!city) {
+    grid.appendChild(create("p", "quiet-text", "Selecciona Madrid, Barcelona o Sevilla en el paso 1 para listar recursos institucionales y del tercer sector."));
+    return;
+  }
   if (!toolState("#tool-resource-map")) {
     grid.appendChild(create("p", "quiet-text", "Mapa de recursos desactivado. No se integrara en el informe."));
     return;
@@ -1756,6 +1809,16 @@ function selectedResourceObjects() {
   return selected;
 }
 
+function pruneSelectedResourcesForCity(city = cityValue()) {
+  if (!city) {
+    state.selectedResources.clear();
+    return;
+  }
+  [...state.selectedResources].forEach((key) => {
+    if (!key.startsWith(`${city}:`)) state.selectedResources.delete(key);
+  });
+}
+
 function selectedLabel(selector) {
   return el(selector)?.selectedOptions?.[0]?.textContent?.trim() || "";
 }
@@ -1763,6 +1826,7 @@ function selectedLabel(selector) {
 function buildCaseData() {
   const variables = recalculateVariables();
   const socialProfile = getSocialProfileData();
+  const ethicalFrame = getEthicalFrameData();
   const selectedResources = selectedResourceObjects();
   const healthApplies = familyHealthApplies();
   const familyMembers = state.familyMembers.map((member) =>
@@ -1783,6 +1847,7 @@ function buildCaseData() {
       yearsInSpainLabel: selectedLabel("#case-years-spain"),
       privacy: el("#privacy-mode").checked
     },
+    ethicalFrame,
     diagnosis: state.selectedDiagnosis,
     dualDiagnosis: {
       applies: dualDiagnosisApplies(),
@@ -1830,7 +1895,7 @@ function buildCaseData() {
       },
       resourceMap: {
         applies: toolState("#tool-resource-map"),
-        evaluated: selectedResources.length > 0,
+        evaluated: Boolean(cityValue()),
         selected: selectedResources
       }
     }
@@ -1915,6 +1980,9 @@ function renderSocialProfileReport(caseData) {
     ["Nacionalidad / apatridia", caseData.person?.nationalStatusLabel || "No registrada"],
     ["Idioma habitual", caseData.person?.language || "No registrado"],
     ["Tiempo en Espana", caseData.person?.yearsInSpainLabel || "No registrado"],
+    ["Consentimiento / uso educativo", caseData.ethicalFrame?.consentAcknowledged ? "Registrado" : "Pendiente de revisar"],
+    ["Participacion usuaria", caseData.ethicalFrame?.participationLevelLabel || "No registrada"],
+    ["Urgencia social inicial", caseData.ethicalFrame?.urgencyLabel || "No registrada"],
     ["Ciudad", compactParts([caseData.city, caseData.district]) || "No registrada"],
     ["Vivienda", optionText("#case-housing") || caseData.housing || "No registrada"],
     ["Situacion administrativa", profile.administrativeStatusLabel || "No registrada"],
@@ -2374,6 +2442,9 @@ function profileReportRows(caseData = {}) {
     ["Nacionalidad / apatridia", caseData.person?.nationalStatusLabel || "No registrada"],
     ["Idioma habitual", caseData.person?.language || "No registrado"],
     ["Tiempo en Espana", caseData.person?.yearsInSpainLabel || "No registrado"],
+    ["Consentimiento / uso educativo", caseData.ethicalFrame?.consentAcknowledged ? "Registrado" : "Pendiente de revisar"],
+    ["Participacion usuaria", caseData.ethicalFrame?.participationLevelLabel || "No registrada"],
+    ["Urgencia social inicial", caseData.ethicalFrame?.urgencyLabel || "No registrada"],
     ["Ciudad", compactParts([caseData.city, caseData.district]) || "No registrada"],
     ["Vivienda", optionText("#case-housing") || caseData.housing || "No registrada"],
     ["Situacion administrativa", profile.administrativeStatusLabel || "No registrada"],
@@ -2610,7 +2681,15 @@ function bindNavigation() {
     });
   });
   el("#prev-step").addEventListener("click", () => setStep(state.currentStep - 1));
-  el("#next-step").addEventListener("click", () => setStep(state.currentStep + 1));
+  el("#next-step").addEventListener("click", () => {
+    if (state.currentStep === 3) {
+      generateResult().catch(() => {
+        el("#result-empty").innerHTML = "<h3>No se pudo generar el resultado</h3><p>Revisa los datos del caso y vuelve a intentarlo.</p>";
+      });
+      return;
+    }
+    setStep(state.currentStep + 1);
+  });
   el("#reset-button").addEventListener("click", resetWorkspace);
   el("#generate-result").addEventListener("click", () => {
     generateResult().catch(() => {
@@ -2709,7 +2788,7 @@ function resetWorkspace() {
   );
   el("#case-form").reset();
   updateAgeSelect(0);
-  el("#case-city").value = "Madrid";
+  el("#case-city").value = "";
   all("#family-checks input").forEach((input) => {
     input.checked = false;
     input.disabled = false;

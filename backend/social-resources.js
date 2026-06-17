@@ -8,7 +8,7 @@ const socialResources = {
       appliesTo: ["vulnerabilidad", "situacionEconomica", "contextoFamiliar", "redSocial"],
       description:
         "Puerta de entrada para informacion, valoracion, diagnostico social, prestaciones, acompanamiento y derivacion comunitaria.",
-      url: "https://www.madrid.es/portales/munimadrid/es/Inicio/Servicios-sociales-y-salud/Servicios-sociales/"
+      url: "https://www.madrid.es/portales/munimadrid/es/Inicio/Servicios-sociales-y-salud/Servicios-sociales/Centros-de-Servicios-Sociales-Municipales/?vgnextchannel=70e4c8eb248fe410VgnVCM1000000b205a0aRCRD&vgnextoid=51886e0cfb6da010VgnVCM100000d90ca8c0RCRD"
     },
     {
       id: "mad-samur-social",
@@ -18,7 +18,7 @@ const socialResources = {
       appliesTo: ["vulnerabilidad", "redSocial", "situacionEconomica"],
       description:
         "Atencion a urgencias sociales, sinhogarismo, perdida brusca de alojamiento y desproteccion severa.",
-      url: "https://www.madrid.es/portales/munimadrid/es/Inicio/Servicios-sociales-y-salud/Servicios-sociales/SAMUR-Social/"
+      url: "https://www.madrid.es/portales/munimadrid/es/Inicio/Servicios-sociales-y-salud/Servicios-sociales/SAMUR-Social-Emergencia-Social/?vgnextchannel=70e4c8eb248fe410VgnVCM1000000b205a0aRCRD&vgnextfmt=default&vgnextoid=1adba93209ee2810VgnVCM1000001d4a900aRCRD"
     },
     {
       id: "mad-salud",
@@ -48,7 +48,7 @@ const socialResources = {
       appliesTo: ["situacionEconomica", "vulnerabilidad"],
       description:
         "Orientacion, formacion, intermediacion laboral e itinerarios de mejora de empleabilidad.",
-      url: "https://www.madrid.es/portales/munimadrid/es/Inicio/Actividad-economica-y-hacienda/Empleo/"
+      url: "https://saltaempleo.madrid.es/"
     },
     {
       id: "mad-cruz-roja",
@@ -234,13 +234,13 @@ const socialResources = {
     },
     {
       id: "bcn-fundacio-joia",
-      name: "Fundacio Joia - A prop Jove",
+      name: "A prop Jove - Barcelona Activa / Fundacio Joia",
       category: "salud",
       type: "tercer sector",
       appliesTo: ["salud", "situacionEconomica", "redSocial", "vulnerabilidad"],
       description:
         "Insercion sociolaboral para jovenes con malestar psicologico desde una mirada social, sanitaria y comunitaria.",
-      url: "https://fundaciojoia.org/es/prop-jove-de-barcelona-activa"
+      url: "https://treball.barcelonactiva.cat/es/a-prop-jove"
     }
   ],
   Sevilla: [
@@ -776,7 +776,7 @@ const supplementalResources = {
       type: "tercer sector",
       appliesTo: ["vulnerabilidad", "situacionEconomica", "redSocial"],
       description: "Empleo, educacion e inclusion de poblacion gitana.",
-      url: "https://www.gitanos.org/andalucia/"
+      url: "https://www.gitanos.org/donde/andalucia/"
     },
     {
       id: "sev-asaenes",
@@ -794,7 +794,7 @@ const supplementalResources = {
       type: "administracion publica",
       appliesTo: ["salud", "dependencia", "redSocial"],
       description: "Apoyo social a personas con trastorno mental grave.",
-      url: "https://faisem.es/"
+      url: "https://www.juntadeandalucia.es/organismos/faisem.html"
     },
     {
       id: "sev-salud-mental-junta",
@@ -803,7 +803,7 @@ const supplementalResources = {
       type: "administracion publica",
       appliesTo: ["salud", "vulnerabilidad"],
       description: "Informacion y recursos sanitarios de salud mental.",
-      url: "https://www.juntadeandalucia.es/organismos/saludyconsumo/areas/salud-vida/salud-mental.html"
+      url: "https://www.sspa.juntadeandalucia.es/servicioandaluzdesalud/el-sas/servicios-y-centros/salud-mental"
     },
     {
       id: "sev-adicciones-junta",
@@ -812,7 +812,7 @@ const supplementalResources = {
       type: "administracion publica",
       appliesTo: ["salud", "vulnerabilidad", "contextoFamiliar"],
       description: "Prevencion y atencion a drogodependencias y adicciones.",
-      url: "https://www.juntadeandalucia.es/organismos/saludyconsumo/areas/drogodependencia-adicciones.html"
+      url: "https://www.juntadeandalucia.es/temas/salud/apoyo/adicciones.html"
     },
     {
       id: "sev-autismo",
@@ -920,8 +920,14 @@ Object.entries(supplementalResources).forEach(([city, resources]) => {
   socialResources[city].push(...resources);
 });
 
+function normalizeCityKey(city = "") {
+  const input = String(city || "").trim();
+  return Object.keys(socialResources).find((key) => key.toLocaleLowerCase("es") === input.toLocaleLowerCase("es")) || input;
+}
+
 function recommendResources(city, variables = {}) {
-  const resources = socialResources[city] || [];
+  const cityKey = normalizeCityKey(city);
+  const resources = socialResources[cityKey] || [];
   const activeKeys = Object.entries(variables)
     .filter(([, variable]) => variable?.active)
     .map(([key]) => key);
@@ -935,4 +941,4 @@ function recommendResources(city, variables = {}) {
     .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
 }
 
-module.exports = { recommendResources, socialResources };
+module.exports = { recommendResources, socialResources, normalizeCityKey };

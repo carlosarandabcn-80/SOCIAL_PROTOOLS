@@ -81,6 +81,34 @@
                   <input id="privacy-mode" type="checkbox" />
                   <span>Ocultar identidad y usar solo codigo en resultado</span>
                 </label>
+                <div class="grid three ethics-grid">
+                  <label class="check-row inline-check ethics-check">
+                    <input id="informed-consent" type="checkbox" />
+                    <span>Consentimiento informado / uso educativo anonimizado</span>
+                  </label>
+                  <div class="field">
+                    <label for="participation-level">Participacion de la persona usuaria</label>
+                    <select id="participation-level">
+                      <option value="">Sin registrar</option>
+                      <option value="alta">Participacion activa en el plan</option>
+                      <option value="media">Participacion parcial o intermitente</option>
+                      <option value="baja">Participacion limitada / requiere apoyos</option>
+                      <option value="no_localizada">No localizada o sin contacto suficiente</option>
+                      <option value="rechazo">Rechaza intervencion en este momento</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="case-urgency">Urgencia social inicial</label>
+                    <select id="case-urgency">
+                      <option value="">Sin registrar</option>
+                      <option value="sin_urgencia">Sin urgencia inmediata</option>
+                      <option value="urgencia_social">Urgencia social 24-72 horas</option>
+                      <option value="riesgo_residencial">Riesgo residencial / perdida de vivienda</option>
+                      <option value="violencia_desproteccion">Violencia, desproteccion o riesgo familiar</option>
+                      <option value="riesgo_sanitario_emocional">Riesgo sanitario o emocional relevante</option>
+                    </select>
+                  </div>
+                </div>
                 <div class="grid three">
                   <div class="field age-select-field">
                     <label for="case-age">Edad</label>
@@ -243,6 +271,7 @@
                   <div class="field">
                     <label for="case-city">Ciudad</label>
                     <select id="case-city">
+                      <option value="">Seleccionar ciudad</option>
                       <option value="Madrid">Madrid</option>
                       <option value="Barcelona">Barcelona</option>
                       <option value="Sevilla">Sevilla</option>

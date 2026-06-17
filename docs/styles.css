@@ -546,6 +546,18 @@ textarea {
   margin-top: 2px;
 }
 
+.ethics-grid {
+  margin: 2px 0 14px;
+}
+
+.ethics-check {
+  min-height: 100%;
+  border-color: rgba(65, 208, 216, 0.32);
+  background:
+    linear-gradient(135deg, rgba(65, 208, 216, 0.08), rgba(255, 79, 196, 0.06)),
+    var(--surface-3);
+}
+
 .check-row,
 .family-checks label,
 .radio-grid label {
@@ -2066,7 +2078,7 @@ svg text {
 .accessibility-widget {
   position: fixed;
   right: 18px;
-  bottom: 70px;
+  bottom: 128px;
   z-index: 900;
   display: grid;
   justify-items: end;
@@ -2326,7 +2338,7 @@ svg text {
 
   .accessibility-widget {
     right: 10px;
-    bottom: 62px;
+    bottom: 86px;
   }
 
   .app-footer-signature {

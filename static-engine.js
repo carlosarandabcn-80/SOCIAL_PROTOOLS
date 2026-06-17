@@ -217,7 +217,7 @@ const socialResources = {
       appliesTo: ["vulnerabilidad", "situacionEconomica", "contextoFamiliar", "redSocial"],
       description:
         "Puerta de entrada para informacion, valoracion, diagnostico social, prestaciones, acompanamiento y derivacion comunitaria.",
-      url: "https://www.madrid.es/portales/munimadrid/es/Inicio/Servicios-sociales-y-salud/Servicios-sociales/"
+      url: "https://www.madrid.es/portales/munimadrid/es/Inicio/Servicios-sociales-y-salud/Servicios-sociales/Centros-de-Servicios-Sociales-Municipales/?vgnextchannel=70e4c8eb248fe410VgnVCM1000000b205a0aRCRD&vgnextoid=51886e0cfb6da010VgnVCM100000d90ca8c0RCRD"
     },
     {
       id: "mad-samur-social",
@@ -227,7 +227,7 @@ const socialResources = {
       appliesTo: ["vulnerabilidad", "redSocial", "situacionEconomica"],
       description:
         "Atencion a urgencias sociales, sinhogarismo, perdida brusca de alojamiento y desproteccion severa.",
-      url: "https://www.madrid.es/portales/munimadrid/es/Inicio/Servicios-sociales-y-salud/Servicios-sociales/SAMUR-Social/"
+      url: "https://www.madrid.es/portales/munimadrid/es/Inicio/Servicios-sociales-y-salud/Servicios-sociales/SAMUR-Social-Emergencia-Social/?vgnextchannel=70e4c8eb248fe410VgnVCM1000000b205a0aRCRD&vgnextfmt=default&vgnextoid=1adba93209ee2810VgnVCM1000001d4a900aRCRD"
     },
     {
       id: "mad-salud",
@@ -257,7 +257,7 @@ const socialResources = {
       appliesTo: ["situacionEconomica", "vulnerabilidad"],
       description:
         "Orientacion, formacion, intermediacion laboral e itinerarios de mejora de empleabilidad.",
-      url: "https://www.madrid.es/portales/munimadrid/es/Inicio/Actividad-economica-y-hacienda/Empleo/"
+      url: "https://saltaempleo.madrid.es/"
     },
     {
       id: "mad-cruz-roja",
@@ -443,13 +443,13 @@ const socialResources = {
     },
     {
       id: "bcn-fundacio-joia",
-      name: "Fundacio Joia - A prop Jove",
+      name: "A prop Jove - Barcelona Activa / Fundacio Joia",
       category: "salud",
       type: "tercer sector",
       appliesTo: ["salud", "situacionEconomica", "redSocial", "vulnerabilidad"],
       description:
         "Insercion sociolaboral para jovenes con malestar psicologico desde una mirada social, sanitaria y comunitaria.",
-      url: "https://fundaciojoia.org/es/prop-jove-de-barcelona-activa"
+      url: "https://treball.barcelonactiva.cat/es/a-prop-jove"
     }
   ],
   Sevilla: [
@@ -985,7 +985,7 @@ const supplementalResources = {
       type: "tercer sector",
       appliesTo: ["vulnerabilidad", "situacionEconomica", "redSocial"],
       description: "Empleo, educacion e inclusion de poblacion gitana.",
-      url: "https://www.gitanos.org/andalucia/"
+      url: "https://www.gitanos.org/donde/andalucia/"
     },
     {
       id: "sev-asaenes",
@@ -1003,7 +1003,7 @@ const supplementalResources = {
       type: "administracion publica",
       appliesTo: ["salud", "dependencia", "redSocial"],
       description: "Apoyo social a personas con trastorno mental grave.",
-      url: "https://faisem.es/"
+      url: "https://www.juntadeandalucia.es/organismos/faisem.html"
     },
     {
       id: "sev-salud-mental-junta",
@@ -1012,7 +1012,7 @@ const supplementalResources = {
       type: "administracion publica",
       appliesTo: ["salud", "vulnerabilidad"],
       description: "Informacion y recursos sanitarios de salud mental.",
-      url: "https://www.juntadeandalucia.es/organismos/saludyconsumo/areas/salud-vida/salud-mental.html"
+      url: "https://www.sspa.juntadeandalucia.es/servicioandaluzdesalud/el-sas/servicios-y-centros/salud-mental"
     },
     {
       id: "sev-adicciones-junta",
@@ -1021,7 +1021,7 @@ const supplementalResources = {
       type: "administracion publica",
       appliesTo: ["salud", "vulnerabilidad", "contextoFamiliar"],
       description: "Prevencion y atencion a drogodependencias y adicciones.",
-      url: "https://www.juntadeandalucia.es/organismos/saludyconsumo/areas/drogodependencia-adicciones.html"
+      url: "https://www.juntadeandalucia.es/temas/salud/apoyo/adicciones.html"
     },
     {
       id: "sev-autismo",
@@ -1129,8 +1129,14 @@ Object.entries(supplementalResources).forEach(([city, resources]) => {
   socialResources[city].push(...resources);
 });
 
+function normalizeCityKey(city = "") {
+  const input = String(city || "").trim();
+  return Object.keys(socialResources).find((key) => key.toLocaleLowerCase("es") === input.toLocaleLowerCase("es")) || input;
+}
+
 function recommendResources(city, variables = {}) {
-  const resources = socialResources[city] || [];
+  const cityKey = normalizeCityKey(city);
+  const resources = socialResources[cityKey] || [];
   const activeKeys = Object.entries(variables)
     .filter(([, variable]) => variable?.active)
     .map(([key]) => key);
@@ -1393,6 +1399,7 @@ function infer(caseData = {}) {
   const variables = caseData.variables || {};
   const recognitions = caseData.recognitions || {};
   const socialProfile = caseData.socialProfile || {};
+  const ethicalFrame = caseData.ethicalFrame || {};
   const active = activeVariables(variables);
   const averageSeverity = active.length
     ? Math.round(active.reduce((sum, item) => sum + Number(item.severity || 0), 0) / active.length)
@@ -1545,6 +1552,27 @@ function infer(caseData = {}) {
     priorityScore += 6;
   }
 
+  if (["urgencia_social", "riesgo_residencial", "violencia_desproteccion", "riesgo_sanitario_emocional"].includes(ethicalFrame.urgency)) {
+    const highRisk = ["violencia_desproteccion", "riesgo_sanitario_emocional", "riesgo_residencial"].includes(ethicalFrame.urgency);
+    findings.push({
+      id: "urgencia-social-inicial",
+      level: highRisk ? "alto" : "medio",
+      text:
+        "La urgencia social inicial obliga a priorizar seguridad, consentimiento, contraste profesional, coordinacion interinstitucional y un plan de accion de corto plazo."
+    });
+    priorityScore += highRisk ? 18 : 12;
+  }
+
+  if (["baja", "no_localizada", "rechazo"].includes(ethicalFrame.participationLevel)) {
+    findings.push({
+      id: "participacion-limitada",
+      level: ethicalFrame.participationLevel === "rechazo" ? "medio" : "alto",
+      text:
+        "La participacion limitada o intermitente requiere ajustar tiempos, comunicacion, vinculo profesional, accesibilidad y consentimiento, evitando imponer itinerarios no pactados."
+    });
+    priorityScore += ethicalFrame.participationLevel === "rechazo" ? 8 : 10;
+  }
+
   const priority =
     priorityScore >= 82 ? "Alta" : priorityScore >= 58 ? "Media-alta" : priorityScore >= 35 ? "Media" : "Preventiva";
 
@@ -1563,8 +1591,18 @@ function infer(caseData = {}) {
 function validation(caseData = {}) {
   const warnings = [];
   const dualCount = (caseData.dualDiagnosis?.diagnoses || []).filter(Boolean).length;
+  const ethicalFrame = caseData.ethicalFrame || {};
   if (!caseData.person?.name && !caseData.person?.code) warnings.push("Falta identificacion o codigo de caso.");
   if (!caseData.person?.age || Number(caseData.person.age) <= 0) warnings.push("Falta edad o etapa vital de la persona.");
+  if (!ethicalFrame.consentAcknowledged) {
+    warnings.push("Revisar consentimiento informado, anonimización o uso educativo del caso antes de conservar/exportar información.");
+  }
+  if (!ethicalFrame.participationLevel) {
+    warnings.push("Falta valorar participación de la persona usuaria en el proceso.");
+  }
+  if (ethicalFrame.urgency && ethicalFrame.urgency !== "sin_urgencia" && !caseData.context) {
+    warnings.push("Urgencia social marcada sin descripción socioeducativa suficiente.");
+  }
   if (!caseData.diagnosis?.code && !(caseData.dualDiagnosis?.applies && dualCount === 2)) {
     warnings.push("Falta seleccionar patologia CIE-11.");
   }
@@ -1589,6 +1627,9 @@ function validation(caseData = {}) {
       warnings.push(`Herramienta activa pendiente de evaluar: ${label}.`);
     }
   });
+  if (caseData.tools?.resourceMap?.applies && !caseData.city) {
+    warnings.push("Mapa de recursos activo sin ciudad seleccionada.");
+  }
   return warnings;
 }
 
@@ -1622,6 +1663,7 @@ function buildProfessionalSynthesis(caseData = {}, inference = {}, familyHealth 
   const dualSummary = dualDiagnosisSummary(caseData.dualDiagnosis);
   const profile = caseData.socialProfile || {};
   const recognitions = caseData.recognitions || {};
+  const ethicalFrame = caseData.ethicalFrame || {};
   const administrativeBarrier = [
     profile.administrativeStatusLabel,
     profile.residencePermitLabel,
@@ -1638,6 +1680,13 @@ function buildProfessionalSynthesis(caseData = {}, inference = {}, familyHealth 
     .filter(Boolean)
     .join(", ");
   const academicAxis = academicPrinciples.map((principle) => principle.source.replace(/^Tema /, "T")).join("; ");
+  const ethicalSummary = [
+    ethicalFrame.consentAcknowledged ? "consentimiento/uso educativo registrado" : "consentimiento pendiente de revisar",
+    ethicalFrame.participationLevelLabel ? `participacion: ${ethicalFrame.participationLevelLabel}` : "",
+    ethicalFrame.urgencyLabel ? `urgencia: ${ethicalFrame.urgencyLabel}` : ""
+  ]
+    .filter(Boolean)
+    .join("; ");
 
   return [
     {
@@ -1646,6 +1695,7 @@ function buildProfessionalSynthesis(caseData = {}, inference = {}, familyHealth 
         `El caso se formula como una situacion de analisis socioeducativo provisional con prioridad ${String(inference.priority || "preventiva").toLowerCase()} ` +
         `y una puntuacion orientativa de ${inference.priorityScore || 0}/100. Las dimensiones activas son: ${active}. ` +
         `${dualSummary ? `Consta patologia dual o diagnostico combinado (${dualSummary}), que debe interpretarse con especial cautela clinica y social. ` : ""}` +
+        `${ethicalSummary ? `Marco etico y de seguridad registrado: ${ethicalSummary}. ` : ""}` +
         `La finalidad no es cerrar un diagnostico sanitario, sino ordenar necesidades, apoyos, barreras y decisiones educativas verificables.`
     },
     {
@@ -1676,6 +1726,7 @@ function buildInterventionProgram(caseData = {}, inference = {}, familyHealth = 
   const variables = caseData.variables || {};
   const profile = caseData.socialProfile || {};
   const recognitions = caseData.recognitions || {};
+  const ethicalFrame = caseData.ethicalFrame || {};
   const stage = lifeStage(caseData.person?.age);
   const selectedResources = caseData.tools?.resourceMap?.selected || [];
   const academicPrinciples = selectAcademicPrinciples(caseData);
@@ -1697,6 +1748,9 @@ function buildInterventionProgram(caseData = {}, inference = {}, familyHealth = 
       recognitions.dependencyGrade ||
       recognitions.disabilityRecognized
   );
+  const needsSafety = ["urgencia_social", "riesgo_residencial", "violencia_desproteccion", "riesgo_sanitario_emocional"].includes(
+    ethicalFrame.urgency
+  );
 
   const objectives = asList([
     "Construir una alianza socioeducativa segura, con consentimiento, privacidad y lenguaje no patologizante.",
@@ -1706,7 +1760,8 @@ function buildInterventionProgram(caseData = {}, inference = {}, familyHealth = 
     needsRights ? "Reducir barreras juridico-administrativas y garantizar acompanamiento a derechos basicos sin discriminacion." : "",
     needsDependency ? "Revisar apoyos de autonomia, accesibilidad, cuidados, reconocimiento de dependencia/discapacidad y continuidad comunitaria." : "",
     needsNetwork ? "Fortalecer red informal y formal mediante sociograma, referentes seguros y participacion comunitaria." : "",
-    needsEmployment ? "Activar un itinerario sociolaboral graduado que combine estabilizacion, formacion, competencias y empleo protegido o normalizado segun proceda." : ""
+    needsEmployment ? "Activar un itinerario sociolaboral graduado que combine estabilizacion, formacion, competencias y empleo protegido o normalizado segun proceda." : "",
+    needsSafety ? "Definir un plan breve de seguridad, urgencia social y coordinacion de circuito antes de objetivos de medio plazo." : ""
   ]);
 
   const methodology = asList([
@@ -1716,6 +1771,7 @@ function buildInterventionProgram(caseData = {}, inference = {}, familyHealth = 
     "Educacion para la salud basada en habilidades: informacion comprensible, autocuidado posible, rutinas y reduccion de danos.",
     hasDualDiagnosis ? "Plan coordinado de patologia dual con derivacion prudente, reduccion de danos, continuidad de vinculo y seguimiento compartido." : "",
     "Coordinacion interprofesional con servicios sociales, atencion primaria, salud mental, empleo, vivienda o dependencia segun necesidades.",
+    needsSafety ? "Plan de seguridad y trazabilidad: senales de alarma, recursos de guardia, responsables, consentimiento posible y registro diferenciado de hechos/hipotesis." : "",
     highPriority ? "Seguimiento intensivo inicial y plan de contingencia ante emergencia social, violencia, ideacion autolesiva o perdida residencial." : "Seguimiento quincenal o mensual con objetivos observables y revision de barreras."
   ]);
 
@@ -1770,7 +1826,9 @@ function buildInterventionProgram(caseData = {}, inference = {}, familyHealth = 
       index === 0 && highPriority
         ? "Explorar riesgo inmediato: emergencia social, violencia, perdida residencial, ideacion autolesiva, desproteccion o necesidad sanitaria urgente."
         : "",
+      index === 0 && !ethicalFrame.consentAcknowledged ? "Revisar consentimiento informado, anonimización, uso educativo y límites de confidencialidad antes de conservar o exportar datos." : "",
       index === 0 && needsRights ? "Comprobar empadronamiento, documentacion disponible, interpretacion linguistica y barreras de acceso a servicios." : "",
+      index === 0 && needsSafety ? "Registrar plan de seguridad inicial, circuito de urgencia y profesional responsable de seguimiento." : "",
       index === 0 && needsHealth ? "Diferenciar diagnostico confirmado, indicios, relato de la persona y necesidades de apoyo sin emitir juicio clinico." : "",
       index === 1 ? "Cruzar CIE-11, variables activas, vivienda, empleo, estudios, origen, derechos, ingresos y apoyos reconocidos." : "",
       index === 1 && caseData.tools?.genogram?.applies ? "Analizar genograma: parentesco, apoyos, conflictos, cuidados, sobrecargas y salud asociada a familiares." : "",
@@ -1804,6 +1862,7 @@ function buildInterventionProgram(caseData = {}, inference = {}, familyHealth = 
 
   const cautions = asList([
     "El informe es provisional y debe revisarse con entrevista, contraste documental y consentimiento informado.",
+    !ethicalFrame.consentAcknowledged ? "No exportar ni conservar datos identificativos sin consentimiento, base educativa anonimizada o indicacion profesional justificada." : "",
     "No formula diagnostico clinico; trabaja con diagnostico confirmado, indicios o informacion no disponible segun conste.",
     "Evita inferencias moralizantes: prioriza determinantes sociales, derechos, apoyos, accesibilidad y participacion.",
     "Ante riesgo vital, violencia, desproteccion grave o emergencia social/sanitaria, activar circuito profesional correspondiente."
@@ -1834,6 +1893,7 @@ function generateStructuredReport(caseData = {}) {
   const recognitions = caseData.recognitions || {};
   const socialProfile = caseData.socialProfile || {};
   const person = caseData.person || {};
+  const ethicalFrame = caseData.ethicalFrame || {};
   const dualSummary = dualDiagnosisSummary(caseData.dualDiagnosis);
   const recognitionSummary = [
     recognitions.vulnerabilityCertificate ? "vulnerabilidad reconocida" : "",
@@ -1863,17 +1923,28 @@ function generateStructuredReport(caseData = {}) {
   ]
     .filter(Boolean)
     .join("; ");
+  const ethicalSummary = [
+    ethicalFrame.consentAcknowledged ? "consentimiento/uso educativo registrado" : "consentimiento pendiente de revisar",
+    ethicalFrame.participationLevelLabel ? `participacion: ${ethicalFrame.participationLevelLabel}` : "",
+    ethicalFrame.urgencyLabel ? `urgencia social inicial: ${ethicalFrame.urgencyLabel}` : ""
+  ]
+    .filter(Boolean)
+    .join("; ");
 
   const globalDiagnosis =
     `El caso se interpreta desde una perspectiva de salud integral, dependencia y vulnerabilidad social. ` +
     `Constan como dimensiones activas: ${activeLabels}. ${recognitionSummary ? `Reconocimientos administrativos registrados: ${recognitionSummary}. ` : ""}` +
     `${personSummary ? `Datos personales y trayectoria registrados: ${personSummary}. ` : ""}` +
+    `${ethicalSummary ? `Marco etico-profesional registrado: ${ethicalSummary}. ` : ""}` +
     `${dualSummary ? `Patologia dual o diagnostico combinado registrado: ${dualSummary}. ` : ""}` +
     `${socialProfileSummary ? `Perfil social registrado: ${socialProfileSummary}. ` : ""}` +
     `El diagnostico clinico figura como ${diagnosisStatus}; por tanto, la intervencion socioeducativa no sustituye valoracion sanitaria y se centra en apoyos, derechos, autonomia y reduccion de barreras.`;
 
   const professionalObservations = [
     `La lectura del caso exige articular factores individuales, familiares, comunitarios e institucionales, siguiendo un enfoque de determinantes sociales de la salud.`,
+    ethicalFrame.urgency && ethicalFrame.urgency !== "sin_urgencia"
+      ? `La urgencia social inicial (${ethicalFrame.urgencyLabel || ethicalFrame.urgency}) exige priorizar seguridad, consentimiento posible, contraste de informacion y coordinacion de circuito antes de objetivos de medio plazo.`
+      : "",
     `La prioridad ${inference.priority.toLowerCase()} se justifica por la intensidad media de las variables activas y por las relaciones detectadas entre red, vulnerabilidad, dependencia y situacion economica.`,
     dualSummary
       ? `La patologia dual debe formularse como hipotesis operativa o diagnostico sanitario registrado segun conste; desde Educacion Social se traduce en apoyos, reduccion de barreras, continuidad de vinculo y coordinacion especializada.`
