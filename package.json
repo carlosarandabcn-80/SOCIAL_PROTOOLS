@@ -4,6 +4,7 @@
   "description": "Laboratorio de Intervencion Psicosocial.",
   "main": "backend/server.js",
   "scripts": {
+    "build:pages": "node scripts/build-pages.js",
     "prepare:icd11": "node scripts/prepare-icd11.js",
     "start": "node backend/server.js",
     "dev": "node backend/server.js"

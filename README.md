@@ -51,6 +51,22 @@ Este proyecto funciona como aplicacion Node local. Para publicarlo en GitHub:
 3. Ejecuta `npm start` en local o en un entorno Node compatible.
 4. Abre `http://localhost:4173`.
 
+## GitHub Pages
+
+La carpeta `docs/` contiene una version estatica para GitHub Pages. Se genera con:
+
+```powershell
+npm run build:pages
+```
+
+En GitHub Pages configura la rama `main` y la carpeta `/docs`. La URL publica queda en:
+
+```text
+https://carlosarandabcn-80.github.io/SOCIAL_PROTOOLS/
+```
+
+En modo Pages no se ejecuta el servidor Node; el navegador usa `static-engine.js` con recursos sociales y motor de informe integrados.
+
 La aplicacion no almacena datos del caso. Exporta el PDF al finalizar cada sesion si necesitas conservar el trabajo.
 
 ## Limite etico
