@@ -5,6 +5,9 @@ const ROOT = path.resolve(__dirname, "..");
 const FRONTEND = path.join(ROOT, "frontend");
 const BACKEND = path.join(ROOT, "backend");
 const DOCS = path.join(ROOT, "docs");
+const ICD11_SOURCE = path.join(ROOT, "data", "icd11-es-2026.json");
+
+let icd11StaticCache = "";
 
 function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), "utf8");
@@ -50,11 +53,34 @@ function buildIndex() {
     .replace('    <script src="app.js"></script>', '    <script src="static-engine.js"></script>\n    <script src="app.js"></script>');
 }
 
+function buildIcd11StaticIndex() {
+  if (icd11StaticCache) return icd11StaticCache;
+  const source = JSON.parse(fs.readFileSync(ICD11_SOURCE, "utf8"));
+  const entries = (source.entries || [])
+    .filter((entry) => entry.code && entry.title)
+    .map((entry) => ({
+      c: entry.code,
+      t: entry.title,
+      e: entry.titleEn || "",
+      ch: entry.chapter || "",
+      l: entry.link || ""
+    }));
+
+  icd11StaticCache = JSON.stringify({
+    version: source.version || "2026-01",
+    count: entries.length,
+    source: "OMS CIE-11 MMS 2026-01. Indice estatico para GitHub Pages.",
+    entries
+  });
+  return icd11StaticCache;
+}
+
 function writeStaticTarget(prefix) {
   write(path.join(prefix, "index.html"), buildIndex());
   write(path.join(prefix, "app.js"), fs.readFileSync(path.join(FRONTEND, "app.js"), "utf8"));
   write(path.join(prefix, "styles.css"), fs.readFileSync(path.join(FRONTEND, "styles.css"), "utf8"));
   write(path.join(prefix, "static-engine.js"), buildStaticEngine());
+  write(path.join(prefix, "data", "icd11-pages.json"), buildIcd11StaticIndex());
   write(path.join(prefix, ".nojekyll"), "");
 
   for (const file of fs.readdirSync(path.join(FRONTEND, "assets"))) {

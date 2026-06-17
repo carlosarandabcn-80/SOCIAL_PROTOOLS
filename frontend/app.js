@@ -201,25 +201,95 @@ function normalizeText(value) {
     .toLowerCase();
 }
 
-function staticIcdSearch(query, limit = 12) {
-  const text = normalizeText(query);
-  if (text.length < 2) return { version: "2026-01", count: healthIssueCatalog.length, results: [] };
-  const results = healthIssueCatalog
-    .filter((issue) =>
-      normalizeText(issue.code).includes(text) ||
-      normalizeText(issue.label).includes(text) ||
-      issue.patterns.some((pattern) => normalizeText(pattern).includes(text) || text.includes(normalizeText(pattern)))
-    )
-    .slice(0, Number(limit) || 12)
-    .map((issue) => ({
+let staticIcdCatalogPromise = null;
+
+function fallbackIcdCatalog() {
+  return {
+    version: "2026-01",
+    count: healthIssueCatalog.length,
+    source: "Catalogo preventivo minimo",
+    entries: healthIssueCatalog.map((issue) => ({
       code: issue.code,
       title: issue.label,
       titleEn: "",
       chapter: issue.chapter,
-      link: ""
+      link: "",
+      patterns: issue.patterns || []
+    }))
+  };
+}
+
+function normalizeIcdEntry(entry) {
+  return {
+    code: entry.code || entry.c || "",
+    title: entry.title || entry.t || "",
+    titleEn: entry.titleEn || entry.e || "",
+    chapter: entry.chapter || entry.ch || "",
+    link: entry.link || entry.l || "",
+    patterns: entry.patterns || []
+  };
+}
+
+async function loadStaticIcdCatalog() {
+  if (!staticIcdCatalogPromise) {
+    staticIcdCatalogPromise = fetch("data/icd11-pages.json", { cache: "force-cache" })
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      })
+      .then((payload) => ({
+        version: payload.version || "2026-01",
+        count: payload.count || payload.entries?.length || healthIssueCatalog.length,
+        source: payload.source || "OMS CIE-11 MMS",
+        entries: (payload.entries || []).map(normalizeIcdEntry)
+      }))
+      .catch(() => fallbackIcdCatalog());
+  }
+
+  return staticIcdCatalogPromise;
+}
+
+function icdScore(entry, text) {
+  const code = normalizeText(entry.code);
+  const title = normalizeText(entry.title);
+  const titleEn = normalizeText(entry.titleEn);
+  const chapter = normalizeText(entry.chapter);
+  const patternMatch = entry.patterns.some((pattern) => {
+    const normalizedPattern = normalizeText(pattern);
+    return normalizedPattern.includes(text) || text.includes(normalizedPattern);
+  });
+
+  if (code === text) return 1000;
+  if (code.startsWith(text)) return 880;
+  if (title.startsWith(text)) return 760;
+  if (title.includes(text)) return 620;
+  if (titleEn.startsWith(text)) return 540;
+  if (titleEn.includes(text)) return 460;
+  if (chapter.includes(text)) return 320;
+  if (patternMatch) return 280;
+  if (code.includes(text)) return 240;
+  return 0;
+}
+
+async function staticIcdSearch(query, limit = 12) {
+  const catalog = await loadStaticIcdCatalog();
+  const text = normalizeText(query);
+  if (text.length < 2) return { version: catalog.version, count: catalog.count, results: [] };
+
+  const results = catalog.entries
+    .map((entry) => ({ entry, score: icdScore(entry, text) }))
+    .filter((item) => item.score > 0)
+    .sort((first, second) => second.score - first.score || first.entry.code.localeCompare(second.entry.code))
+    .slice(0, Number(limit) || 12)
+    .map(({ entry }) => ({
+      code: entry.code,
+      title: entry.title,
+      titleEn: entry.titleEn,
+      chapter: entry.chapter,
+      link: entry.link
     }));
 
-  return { version: "2026-01", count: healthIssueCatalog.length, results };
+  return { version: catalog.version, count: catalog.count, results };
 }
 
 async function apiGetJson(path, fallback) {
@@ -246,13 +316,14 @@ async function apiPostJson(path, payload, fallback) {
   }
 }
 
-function staticKnowledge() {
+async function staticKnowledge() {
+  const catalog = await loadStaticIcdCatalog();
   return {
     resources: window.SOCIAL_STATIC_RESOURCES || {},
     icd11: {
-      version: "2026-01",
-      count: healthIssueCatalog.length,
-      source: "Catalogo estatico CIE-11 para GitHub Pages"
+      version: catalog.version,
+      count: catalog.count,
+      source: catalog.source
     }
   };
 }
@@ -2542,7 +2613,7 @@ async function init() {
   const knowledge = await apiGetJson("/api/knowledge", staticKnowledge);
   state.resources = knowledge.resources || {};
   if (knowledge.icd11) {
-    el("#data-source").textContent = `OMS CIE-11 ${knowledge.icd11.version} · ${knowledge.icd11.count.toLocaleString("es-ES")} codigos`;
+    el("#data-source").textContent = `OMS CIE-11 ${knowledge.icd11.version} · ${knowledge.icd11.count.toLocaleString("es-ES")} códigos`;
   }
   bindNavigation();
   bindFamilyControls();
