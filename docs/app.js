@@ -2143,7 +2143,7 @@ async function exportReportPdf() {
   await generateResult();
   if (!state.lastResult) return;
   const { caseData, report } = state.lastResult;
-  const logoUrl = assetUrl("assets/social-tools-logo.png");
+  const logoUrl = assetUrl("assets/social-tools-wordmark.png");
   const resources = selectedResourceObjects().length ? selectedResourceObjects() : report.resources;
   const profileRows = profileReportRows(caseData)
     .map(([label, value]) => `<div><strong>${escapeHtml(label)}</strong><br>${escapeHtml(value || "No registrado")}</div>`)
@@ -2246,7 +2246,7 @@ async function exportReportPdf() {
           body { margin: 0; color: #17212b; font-family: Arial, sans-serif; line-height: 1.45; }
           header { padding: 18px; color: white; background: linear-gradient(135deg, #0f5f72, #1d8fa3 58%, #b51983); border-radius: 14px; }
           .pdf-brand { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
-          .pdf-brand img { width: 54px; height: 54px; object-fit: contain; border-radius: 12px; background: #101920; padding: 3px; border: 1px solid rgba(181, 25, 131, .38); }
+          .pdf-brand img { width: 190px; max-width: 58%; height: auto; object-fit: contain; border-radius: 12px; background: #fff; padding: 6px 10px; border: 1px solid rgba(56, 139, 255, .32); box-shadow: 0 10px 26px rgba(0, 0, 0, .16); }
           .pdf-brand p { margin: 0 0 4px; text-transform: uppercase; font-size: 11px; letter-spacing: .08em; opacity: .88; }
           h1 { margin: 0 0 8px; font-size: 26px; }
           h2 { margin: 22px 0 10px; color: #0f5f72; font-size: 17px; border-bottom: 2px solid #d7eef3; padding-bottom: 6px; }
@@ -2275,7 +2275,7 @@ async function exportReportPdf() {
       <body>
         <header>
           <div class="pdf-brand">
-            <img src="${escapeHtml(logoUrl)}" alt="Social Tools" />
+            <img src="${escapeHtml(logoUrl)}" alt="Social Protools" />
             <div>
               <p>Informe socioeducativo</p>
               <h1>Laboratorio de Intervención Psicosocial</h1>
