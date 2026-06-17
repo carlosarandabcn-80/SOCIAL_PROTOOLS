@@ -17,8 +17,8 @@
   --red: #ff7e7e;
   --violet: #b69cff;
   --blue: #7cb8ff;
-  --fuchsia: #ff4fc4;
-  --fuchsia-soft: rgba(255, 79, 196, 0.14);
+  --electric-blue: #388bff;
+  --electric-blue-soft: rgba(56, 139, 255, 0.14);
   --ink: #061014;
 }
 
@@ -54,7 +54,7 @@ body.access-high-contrast {
   --text: #fff;
   --muted: #f0f4f7;
   --cyan: #68f2ff;
-  --fuchsia: #ff5fd4;
+  --electric-blue: #68a7ff;
 }
 
 body.access-spacing p,
@@ -153,7 +153,7 @@ select:focus-visible {
   display: grid;
   place-items: center;
   background:
-    radial-gradient(circle at 38% 42%, rgba(255, 79, 196, 0.14), transparent 28%),
+    radial-gradient(circle at 38% 42%, rgba(56, 139, 255, 0.14), transparent 28%),
     radial-gradient(circle at 62% 55%, rgba(65, 208, 216, 0.12), transparent 32%),
     rgba(8, 12, 17, 0.98);
   animation: intro-fade 4.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -213,7 +213,7 @@ select:focus-visible {
   border: 1px solid var(--line);
   border-radius: 8px;
   background:
-    linear-gradient(135deg, rgba(255, 79, 196, 0.1), transparent 36%),
+    linear-gradient(135deg, rgba(56, 139, 255, 0.1), transparent 36%),
     linear-gradient(135deg, rgba(65, 208, 216, 0.16), rgba(99, 223, 160, 0.08)),
     var(--surface);
 }
@@ -257,12 +257,12 @@ select:focus-visible {
   display: block;
   height: 4px;
   border-radius: 999px;
-  box-shadow: 0 0 24px rgba(255, 79, 196, 0.25);
+  box-shadow: 0 0 24px rgba(56, 139, 255, 0.25);
 }
 
 .brand-signal span:nth-child(1) {
   width: 28px;
-  background: var(--fuchsia);
+  background: var(--electric-blue);
 }
 
 .brand-signal span:nth-child(2) {
@@ -381,8 +381,8 @@ h4 {
 }
 
 .stepper button.active {
-  border-color: var(--fuchsia);
-  background: linear-gradient(135deg, var(--cyan-soft), var(--fuchsia-soft));
+  border-color: var(--electric-blue);
+  background: linear-gradient(135deg, var(--cyan-soft), var(--electric-blue-soft));
   color: var(--text);
 }
 
@@ -554,7 +554,7 @@ textarea {
   min-height: 100%;
   border-color: rgba(65, 208, 216, 0.32);
   background:
-    linear-gradient(135deg, rgba(65, 208, 216, 0.08), rgba(255, 79, 196, 0.06)),
+    linear-gradient(135deg, rgba(65, 208, 216, 0.08), rgba(56, 139, 255, 0.06)),
     var(--surface-3);
 }
 
@@ -829,8 +829,8 @@ textarea {
 }
 
 .sociogram-core {
-  fill: var(--fuchsia);
-  filter: drop-shadow(0 14px 24px rgba(255, 79, 196, 0.24));
+  fill: var(--electric-blue);
+  filter: drop-shadow(0 14px 24px rgba(56, 139, 255, 0.24));
 }
 
 .person-label {
@@ -1002,7 +1002,7 @@ svg text {
 }
 
 .resource-map-pin .migration {
-  background: var(--fuchsia);
+  background: var(--electric-blue);
 }
 
 .resource-map-pin .housing {
@@ -1010,7 +1010,7 @@ svg text {
 }
 
 .resource-map-pin .women {
-  background: linear-gradient(135deg, var(--fuchsia), var(--violet));
+  background: linear-gradient(135deg, var(--electric-blue), var(--violet));
 }
 
 .resource-map-pin .community {
@@ -1083,7 +1083,7 @@ svg text {
   border: 1px solid var(--line-soft);
   border-radius: 8px;
   background:
-    radial-gradient(circle at 50% 50%, rgba(255, 79, 196, 0.13), transparent 24%),
+    radial-gradient(circle at 50% 50%, rgba(56, 139, 255, 0.13), transparent 24%),
     linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
     #0c1218;
@@ -1185,7 +1185,7 @@ svg text {
 }
 
 .legend-core {
-  background: var(--fuchsia);
+  background: var(--electric-blue);
 }
 
 .tool-actions {
@@ -1212,10 +1212,10 @@ svg text {
 
 .dual-diagnosis-panel {
   margin: 12px 0;
-  border: 1px solid rgba(255, 79, 196, 0.24);
+  border: 1px solid rgba(56, 139, 255, 0.24);
   border-radius: 8px;
   background:
-    linear-gradient(135deg, rgba(255, 79, 196, 0.08), transparent 42%),
+    linear-gradient(135deg, rgba(56, 139, 255, 0.08), transparent 42%),
     var(--surface-3);
   padding: 12px;
 }
@@ -1290,9 +1290,9 @@ svg text {
 }
 
 .resource-group-header span {
-  border: 1px solid rgba(255, 79, 196, 0.32);
+  border: 1px solid rgba(56, 139, 255, 0.32);
   border-radius: 999px;
-  background: var(--fuchsia-soft);
+  background: var(--electric-blue-soft);
   color: var(--text);
   padding: 4px 9px;
   font-size: 0.74rem;
@@ -1395,7 +1395,7 @@ svg text {
   gap: 16px;
   align-items: center;
   background:
-    linear-gradient(135deg, rgba(255, 79, 196, 0.12), transparent 42%),
+    linear-gradient(135deg, rgba(56, 139, 255, 0.12), transparent 42%),
     linear-gradient(135deg, rgba(67, 217, 236, 0.14), var(--surface));
 }
 
@@ -1488,7 +1488,7 @@ svg text {
   border: 1px solid var(--line-soft);
   border-radius: 8px;
   background:
-    linear-gradient(135deg, rgba(255, 79, 196, 0.08), transparent 44%),
+    linear-gradient(135deg, rgba(56, 139, 255, 0.08), transparent 44%),
     var(--surface-3);
   padding: 13px;
 }
@@ -1532,7 +1532,7 @@ svg text {
 }
 
 .intervention-phases div {
-  border-left: 4px solid var(--fuchsia);
+  border-left: 4px solid var(--electric-blue);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.025);
   padding: 10px;
@@ -1543,10 +1543,10 @@ svg text {
   display: inline-flex;
   width: fit-content;
   margin-bottom: 8px;
-  border: 1px solid rgba(255, 79, 196, 0.3);
+  border: 1px solid rgba(56, 139, 255, 0.3);
   border-radius: 999px;
-  background: rgba(255, 79, 196, 0.1);
-  color: var(--fuchsia);
+  background: rgba(56, 139, 255, 0.1);
+  color: var(--electric-blue);
   padding: 4px 8px;
   font-size: 0.72rem;
   font-weight: 850;
@@ -1593,7 +1593,7 @@ svg text {
 }
 
 .source-mini-grid a:hover {
-  border-color: var(--fuchsia);
+  border-color: var(--electric-blue);
 }
 
 .risk-grid {
@@ -1612,7 +1612,7 @@ svg text {
   border: 1px solid var(--line-soft);
   border-radius: 8px;
   background:
-    linear-gradient(135deg, rgba(255, 79, 196, 0.08), transparent 46%),
+    linear-gradient(135deg, rgba(56, 139, 255, 0.08), transparent 46%),
     var(--surface-3);
   padding: 12px;
 }
@@ -1724,7 +1724,7 @@ svg text {
 
 .sidebar-menu {
   background:
-    linear-gradient(180deg, rgba(255, 79, 196, 0.12), transparent 175px),
+    linear-gradient(180deg, rgba(56, 139, 255, 0.12), transparent 175px),
     linear-gradient(135deg, rgba(65, 208, 216, 0.09), transparent 240px),
     var(--surface);
   padding: 18px;
@@ -1747,8 +1747,8 @@ svg text {
 }
 
 .sidebar-menu details[open] {
-  border-color: rgba(255, 79, 196, 0.35);
-  background: rgba(255, 79, 196, 0.055);
+  border-color: rgba(56, 139, 255, 0.35);
+  background: rgba(56, 139, 255, 0.055);
 }
 
 .sidebar-menu summary {
@@ -1774,10 +1774,10 @@ svg text {
   width: 36px;
   height: 36px;
   flex: 0 0 36px;
-  border: 1px solid rgba(255, 79, 196, 0.3);
+  border: 1px solid rgba(56, 139, 255, 0.3);
   border-radius: 8px;
-  background: linear-gradient(135deg, rgba(255, 79, 196, 0.18), rgba(65, 208, 216, 0.12));
-  color: var(--fuchsia);
+  background: linear-gradient(135deg, rgba(56, 139, 255, 0.18), rgba(65, 208, 216, 0.12));
+  color: var(--electric-blue);
 }
 
 .menu-icon svg {
@@ -1808,7 +1808,7 @@ svg text {
 
 .sidebar-menu details[open] summary::after {
   content: "-";
-  color: var(--fuchsia);
+  color: var(--electric-blue);
 }
 
 .sidebar-menu button {
@@ -1832,9 +1832,9 @@ svg text {
 }
 
 .data-warning {
-  border-color: rgba(255, 79, 196, 0.42);
+  border-color: rgba(56, 139, 255, 0.42);
   background:
-    linear-gradient(135deg, rgba(255, 79, 196, 0.12), rgba(65, 208, 216, 0.06)),
+    linear-gradient(135deg, rgba(56, 139, 255, 0.12), rgba(65, 208, 216, 0.06)),
     var(--surface);
 }
 
@@ -1858,7 +1858,7 @@ svg text {
   min-height: 54px;
   border: 0;
   border-radius: 0;
-  background: linear-gradient(135deg, var(--fuchsia), var(--red));
+  background: linear-gradient(135deg, var(--electric-blue), var(--red));
   color: white;
   padding: 0 16px;
   text-transform: uppercase;
@@ -1926,7 +1926,7 @@ svg text {
     opacity: 0.98;
     transform: scale(1.02) rotate(0deg);
     filter:
-      drop-shadow(0 0 26px rgba(255, 79, 196, 0.22))
+      drop-shadow(0 0 26px rgba(56, 139, 255, 0.22))
       drop-shadow(0 24px 54px rgba(0, 0, 0, 0.38));
   }
 }
@@ -2089,13 +2089,13 @@ svg text {
   width: 60px;
   height: 60px;
   border: 0;
-  border-radius: 20px;
+  border-radius: 50%;
   background: transparent;
   color: var(--text);
   padding: 0;
   box-shadow:
     0 20px 48px rgba(0, 0, 0, 0.38),
-    0 0 0 5px rgba(255, 79, 196, 0.07);
+    0 0 0 5px rgba(56, 139, 255, 0.07);
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease,
@@ -2107,7 +2107,7 @@ svg text {
   transform: translateY(-2px) scale(1.02);
   box-shadow:
     0 24px 54px rgba(0, 0, 0, 0.44),
-    0 0 0 5px rgba(255, 79, 196, 0.14),
+    0 0 0 5px rgba(56, 139, 255, 0.14),
     0 0 22px rgba(67, 217, 236, 0.18);
 }
 
@@ -2144,7 +2144,7 @@ svg text {
 
 .access-group-label {
   margin-top: 4px;
-  color: var(--fuchsia);
+  color: var(--electric-blue);
   font-size: 0.72rem;
   font-weight: 900;
   text-transform: uppercase;
@@ -2159,8 +2159,8 @@ svg text {
 }
 
 .accessibility-panel button[aria-pressed="true"] {
-  border-color: var(--fuchsia);
-  background: rgba(255, 79, 196, 0.16);
+  border-color: var(--electric-blue);
+  background: rgba(56, 139, 255, 0.16);
 }
 
 .app-footer-signature {

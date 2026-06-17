@@ -6,7 +6,7 @@ const FRONTEND = path.join(ROOT, "frontend");
 const BACKEND = path.join(ROOT, "backend");
 const DOCS = path.join(ROOT, "docs");
 const ICD11_SOURCE = path.join(ROOT, "data", "icd11-es-2026.json");
-const ASSET_VERSION = "20260617-audit-polish";
+const ASSET_VERSION = "20260618-electric-blue-a11y";
 
 let icd11StaticCache = "";
 

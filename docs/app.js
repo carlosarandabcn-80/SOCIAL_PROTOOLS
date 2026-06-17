@@ -2312,7 +2312,7 @@ async function exportReportPdf() {
           @page { size: A4; margin: 16mm; }
           * { box-sizing: border-box; }
           body { margin: 0; color: #17212b; font-family: Arial, sans-serif; line-height: 1.45; }
-          header { padding: 18px; color: white; background: linear-gradient(135deg, #0f5f72, #1d8fa3 58%, #b51983); border-radius: 14px; }
+          header { padding: 18px; color: white; background: linear-gradient(135deg, #0f5f72, #1d8fa3 58%, #388bff); border-radius: 14px; }
           .pdf-brand { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
           .pdf-brand img { width: 190px; max-width: 58%; height: auto; object-fit: contain; border-radius: 12px; background: #fff; padding: 6px 10px; border: 1px solid rgba(56, 139, 255, .32); box-shadow: 0 10px 26px rgba(0, 0, 0, .16); }
           .pdf-brand p { margin: 0 0 4px; text-transform: uppercase; font-size: 11px; letter-spacing: .08em; opacity: .88; }
@@ -2330,7 +2330,7 @@ async function exportReportPdf() {
           .program-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
           .roadmap { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
           .phase { border-left: 5px solid #1d8fa3; }
-          .source { border-left: 5px solid #b51983; }
+          .source { border-left: 5px solid #388bff; }
           .warning { border-color: #f2b8b5; background: #fff4f3; }
           .metric-grid-pdf { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
           .metric-pdf { border: 1px solid #d8e4ea; border-radius: 10px; padding: 10px; background: #f7fbfc; }
