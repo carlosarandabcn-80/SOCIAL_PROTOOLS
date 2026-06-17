@@ -37,6 +37,43 @@ const cityCenters = {
   Sevilla: { lat: 37.3891, lng: -5.9845, zoom: 12 }
 };
 
+const originRegionCodes = [
+  "AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ",
+  "BS", "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BQ", "BA", "BW", "BV", "BR", "IO", "BN", "BG", "BF", "BI",
+  "CV", "KH", "CM", "CA", "KY", "CF", "TD", "CL", "CN", "CX", "CC", "CO", "KM", "CG", "CD", "CK", "CR", "CI", "HR", "CU", "CW", "CY", "CZ",
+  "DK", "DJ", "DM", "DO",
+  "EC", "EG", "SV", "GQ", "ER", "EE", "SZ", "ET",
+  "FK", "FO", "FJ", "FI", "FR", "GF", "PF", "TF",
+  "GA", "GM", "GE", "DE", "GH", "GI", "GR", "GL", "GD", "GP", "GU", "GT", "GG", "GN", "GW", "GY",
+  "HT", "HM", "VA", "HN", "HK", "HU",
+  "IS", "IN", "ID", "IR", "IQ", "IE", "IM", "IL", "IT",
+  "JM", "JP", "JE", "JO",
+  "KZ", "KE", "KI", "KP", "KR", "KW", "KG",
+  "LA", "LV", "LB", "LS", "LR", "LY", "LI", "LT", "LU",
+  "MO", "MG", "MW", "MY", "MV", "ML", "MT", "MH", "MQ", "MR", "MU", "YT", "MX", "FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "MM",
+  "NA", "NR", "NP", "NL", "NC", "NZ", "NI", "NE", "NG", "NU", "NF", "MK", "MP", "NO",
+  "OM",
+  "PK", "PW", "PS", "PA", "PG", "PY", "PE", "PH", "PN", "PL", "PT", "PR", "QA",
+  "RE", "RO", "RU", "RW",
+  "BL", "SH", "KN", "LC", "MF", "PM", "VC", "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SX", "SK", "SI", "SB", "SO", "ZA", "GS", "SS", "ES", "LK", "SD", "SR", "SJ", "SE", "CH", "SY",
+  "TW", "TJ", "TZ", "TH", "TL", "TG", "TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV",
+  "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ",
+  "VU", "VE", "VN", "VG", "VI",
+  "WF", "EH", "YE", "ZM", "ZW"
+];
+
+const originExtraOptions = [
+  "Apátrida / sin país de origen acreditado",
+  "Escocia",
+  "Gales",
+  "Inglaterra",
+  "Irlanda del Norte",
+  "Kosovo",
+  "No consta / pendiente de entrevista",
+  "República Árabe Saharaui Democrática",
+  "Territorio no reconocido o en disputa"
+];
+
 const resourceLocations = {
   Madrid: {
     "mad-ss-primary": { lat: 40.4168, lng: -3.7038, address: "Red municipal de centros de servicios sociales, Madrid" },
@@ -585,7 +622,12 @@ function getSocialProfileData() {
   };
 }
 
+function familyHealthApplies() {
+  return Boolean(el("#family-health-applies")?.checked);
+}
+
 function familyHealthIssues() {
+  if (!familyHealthApplies()) return [];
   return state.familyMembers.flatMap((member) =>
     (member.healthIssues || []).map((issue) => ({
       ...issue,
@@ -611,7 +653,7 @@ function recalculateVariables() {
       el("#case-context")?.value,
       el("#diagnosis-indications")?.value,
       el("#dual-diagnosis-notes")?.value,
-      el("#family-health-problems")?.value,
+      familyHealthApplies() ? el("#family-health-problems")?.value : "",
       getSocialProfileData().barriers
     ].join(" ")
   );
@@ -790,7 +832,7 @@ function renderGenogram() {
     .join("");
   const nodeMarkup = nodes
     .map(({ member, x, y }) => {
-      const issues = member.healthIssues || [];
+      const issues = familyHealthApplies() ? member.healthIssues || [] : [];
       const issueCodes = issues.map((issue) => issue.code).slice(0, 2).join(" / ");
       const issueText = issues.length ? `${issueCodes}${issues.length > 2 ? " +" : ""}` : short(member.kinship, 12);
       return `
@@ -848,7 +890,7 @@ function renderFamilyList() {
     const row = create("div", `family-row ${nodeClass(member.relation)}`);
     const text = create("button", "family-select");
     text.type = "button";
-    const issues = (member.healthIssues || []).map((issue) => issue.code).join(", ");
+    const issues = familyHealthApplies() ? (member.healthIssues || []).map((issue) => issue.code).join(", ") : "";
     text.innerHTML = `
       <strong>${escapeHtml(member.name || member.role)} · ${escapeHtml(member.role)}</strong>
       <span>${escapeHtml(member.generation)} · ${escapeHtml(member.kinship)} · ${escapeHtml(member.relation)} · intensidad ${member.strength}</span>
@@ -1056,6 +1098,11 @@ function renderMemberHealthPanel() {
   const box = el("#member-health-panel");
   if (!box) return;
   clearNode(box);
+
+  if (!familyHealthApplies()) {
+    box.appendChild(create("p", "quiet-text", "No aplica: el analisis se centra en la persona del caso y no incorpora patologias familiares."));
+    return;
+  }
 
   if (el("#no-family-network")?.checked) {
     box.appendChild(create("p", "quiet-text", "Sin red familiar: no hay miembros a los que asignar patologias."));
@@ -1717,6 +1764,10 @@ function buildCaseData() {
   const variables = recalculateVariables();
   const socialProfile = getSocialProfileData();
   const selectedResources = selectedResourceObjects();
+  const healthApplies = familyHealthApplies();
+  const familyMembers = state.familyMembers.map((member) =>
+    healthApplies ? member : { ...member, healthIssues: [] }
+  );
   return {
     person: {
       name: el("#privacy-mode").checked ? "" : el("#case-name").value.trim(),
@@ -1754,21 +1805,22 @@ function buildCaseData() {
       supports: el("#recognized-supports").value,
       administrativeNotes: el("#admin-notes").value
     },
-    familyHealthProblems: el("#family-health-problems").value,
+    familyHealthApplies: healthApplies,
+    familyHealthProblems: healthApplies ? el("#family-health-problems").value : "",
     familyHealthIssues: familyHealthIssues(),
-    includePreventionProgram: el("#include-prevention-program").checked,
+    includePreventionProgram: healthApplies && el("#include-prevention-program").checked,
     context: el("#case-context").value,
     variables,
     family: {
       noNetwork: el("#no-family-network").checked,
-      members: state.familyMembers
+      members: familyMembers
     },
     tools: {
       genogram: {
         applies: toolState("#tool-genogram"),
-        evaluated: el("#no-family-network").checked || state.familyMembers.length > 0,
-        conflict: state.familyMembers.filter((member) => ["conflictiva", "riesgo"].includes(member.relation)).length * 25,
-        members: state.familyMembers
+        evaluated: el("#no-family-network").checked || familyMembers.length > 0,
+        conflict: familyMembers.filter((member) => ["conflictiva", "riesgo"].includes(member.relation)).length * 25,
+        members: familyMembers
       },
       sociogram: {
         applies: toolState("#tool-sociogram"),
@@ -1872,6 +1924,7 @@ function renderSocialProfileReport(caseData) {
     ["Estudios", profile.educationLevelLabel || "No registrados"],
     ["Ingresos/prestaciones", profile.incomeStatusLabel || "No registrados"],
     ["Familia", familySummary],
+    ["Salud familiar 1.7", caseData.familyHealthApplies ? "Aplica al caso" : "No aplica: estudio centrado en la persona"],
     ["Patologias familiares", `${caseData.familyHealthIssues?.length || 0} registros`],
     ["Patologia dual", caseData.dualDiagnosis?.applies ? formatDualDiagnosis(caseData.dualDiagnosis) : "No aplica"],
     ["Barreras", profile.barriers || "No registradas"]
@@ -2330,6 +2383,7 @@ function profileReportRows(caseData = {}) {
     ["Estudios", profile.educationLevelLabel || "No registrados"],
     ["Ingresos/prestaciones", profile.incomeStatusLabel || "No registrados"],
     ["Familia", familySummary],
+    ["Salud familiar 1.7", caseData.familyHealthApplies ? "Aplica al caso" : "No aplica: estudio centrado en la persona"],
     ["Patologias familiares", `${caseData.familyHealthIssues?.length || 0} registros`],
     ["Patologia dual", caseData.dualDiagnosis?.applies ? formatDualDiagnosis(caseData.dualDiagnosis) : "No aplica"],
     ["Barreras", profile.barriers || "No registradas"]
@@ -2358,6 +2412,29 @@ function formatRecognitions(recognitions = {}) {
   if (recognitions.supports) parts.push(`Apoyos: ${recognitions.supports}`);
   if (recognitions.administrativeNotes) parts.push(`Observaciones: ${recognitions.administrativeNotes}`);
   return parts.length ? parts.join(". ") : "Sin reconocimientos administrativos registrados.";
+}
+
+function updateFamilyHealthApplicability() {
+  const enabled = familyHealthApplies();
+  all("[data-family-health-dependent]").forEach((node) => {
+    node.hidden = !enabled;
+    node.querySelectorAll("input, textarea, button").forEach((control) => {
+      control.disabled = !enabled;
+    });
+  });
+  if (!enabled) {
+    el("#include-prevention-program").checked = false;
+    all(".health-results").forEach((node) => {
+      clearNode(node);
+      node.classList.remove("visible");
+    });
+  }
+  recalculateVariables();
+  renderVariables();
+  renderMemberHealthPanel();
+  renderGenogram();
+  renderResources();
+  updateSummary();
 }
 
 function bindFamilyControls() {
@@ -2400,6 +2477,7 @@ function bindFamilyControls() {
     renderGenogram();
   });
 
+  el("#family-health-applies").addEventListener("change", updateFamilyHealthApplicability);
   el("#open-family-dialog").addEventListener("click", () => openFamilyDialog());
   el("#clear-family").addEventListener("click", () => {
     state.familyRoles.clear();
@@ -2566,6 +2644,29 @@ function bindSummaryInputs() {
   });
 }
 
+function populateOriginCountries() {
+  const datalist = el("#origin-countries");
+  if (!datalist) return;
+  const displayNames = typeof Intl !== "undefined" && Intl.DisplayNames
+    ? new Intl.DisplayNames(["es"], { type: "region" })
+    : null;
+  const countryNames = originRegionCodes
+    .map((code) => displayNames?.of(code) || code)
+    .filter(Boolean)
+    .map((name) => (name === "Territorios Palestinos" ? "Palestina / Territorios Palestinos" : name));
+  const collator = typeof Intl !== "undefined" && Intl.Collator
+    ? new Intl.Collator("es", { sensitivity: "base" })
+    : null;
+  const values = [...new Set([...countryNames, ...originExtraOptions])]
+    .sort((a, b) => (collator ? collator.compare(a, b) : a.localeCompare(b)));
+  clearNode(datalist);
+  values.forEach((value) => {
+    const option = document.createElement("option");
+    option.value = value;
+    datalist.appendChild(option);
+  });
+}
+
 function populateAgeSelect() {
   const select = el("#case-age");
   if (!select || select.options.length) return;
@@ -2616,6 +2717,7 @@ function resetWorkspace() {
   el("#tool-genogram").checked = false;
   el("#tool-sociogram").checked = false;
   el("#tool-resource-map").checked = false;
+  el("#family-health-applies").checked = false;
   el("#include-prevention-program").checked = false;
   el("#dual-diagnosis-enabled").checked = false;
   updateDualDiagnosisPanel();
@@ -2627,6 +2729,7 @@ function resetWorkspace() {
   el("#result-empty").classList.remove("hidden");
   el("#result-report").classList.add("hidden");
   renderVariables();
+  updateFamilyHealthApplicability();
   renderMemberHealthPanel();
   setStep(1);
   renderGenogram();
@@ -2641,6 +2744,7 @@ async function init() {
   if (knowledge.icd11) {
     el("#data-source").textContent = `OMS CIE-11 ${knowledge.icd11.version} · ${knowledge.icd11.count.toLocaleString("es-ES")} códigos`;
   }
+  populateOriginCountries();
   bindNavigation();
   bindFamilyControls();
   bindDiagnosisControls();

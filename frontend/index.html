@@ -99,23 +99,8 @@
                 <div class="grid four origin-grid">
                   <div class="field">
                     <label for="case-origin-country">Pais de origen</label>
-                    <input id="case-origin-country" type="text" list="origin-countries" placeholder="Ej.: Espana, Marruecos, Colombia..." />
-                    <datalist id="origin-countries">
-                      <option value="Espana"></option>
-                      <option value="Marruecos"></option>
-                      <option value="Colombia"></option>
-                      <option value="Venezuela"></option>
-                      <option value="Ecuador"></option>
-                      <option value="Peru"></option>
-                      <option value="Argentina"></option>
-                      <option value="Bolivia"></option>
-                      <option value="Rumania"></option>
-                      <option value="Ucrania"></option>
-                      <option value="Senegal"></option>
-                      <option value="Mali"></option>
-                      <option value="Nigeria"></option>
-                      <option value="Siria"></option>
-                    </datalist>
+                    <input id="case-origin-country" type="text" list="origin-countries" placeholder="Ej.: España, Marruecos, Colombia..." />
+                    <datalist id="origin-countries"></datalist>
                   </div>
                   <div class="field">
                     <label for="case-national-status">Nacionalidad / origen juridico</label>
@@ -441,15 +426,20 @@
                   <span>1.7</span>
                   <div>
                     <h3>Unidad familiar y patologias asociadas</h3>
-                    <p>Selecciona patologias o indicios por familiar. Se trasladan automaticamente al genograma y al informe.</p>
+                    <p>Activa este bloque solo si el ejercicio requiere estudiar patologias o indicios de miembros familiares.</p>
                   </div>
                 </div>
                 <label class="check-row inline-check">
+                  <input id="family-health-applies" type="checkbox" />
+                  <span>Aplica al caso: estudiar salud, patologias o indicios de la unidad familiar</span>
+                </label>
+                <p class="quiet-text">Si no se activa, el informe estudia solo a la persona del caso y no traslada patologias familiares al genograma ni al resultado.</p>
+                <label class="check-row inline-check" data-family-health-dependent>
                   <input id="include-prevention-program" type="checkbox" />
                   <span>Incluir programa de prevencion primaria, secundaria y terciaria en el informe</span>
                 </label>
-                <div id="member-health-panel" class="member-health-panel"></div>
-                <div class="field">
+                <div id="member-health-panel" class="member-health-panel" data-family-health-dependent></div>
+                <div class="field" data-family-health-dependent>
                   <label for="family-health-problems">Relato clinico-social complementario</label>
                   <textarea
                     id="family-health-problems"

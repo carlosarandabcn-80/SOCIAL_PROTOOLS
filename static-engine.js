@@ -1285,6 +1285,15 @@ function normalize(value) {
 }
 
 function detectFamilyHealth(caseData = {}) {
+  if (caseData.familyHealthApplies === false) {
+    return {
+      enabled: false,
+      detected: [],
+      members: [],
+      assignment: []
+    };
+  }
+
   const explicitIssues = (caseData.familyHealthIssues || []).map((issue) => {
     const matched = healthIssueRules.find(
       (rule) =>
