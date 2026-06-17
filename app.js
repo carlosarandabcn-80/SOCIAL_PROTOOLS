@@ -1955,6 +1955,10 @@ function listMarkup(items = []) {
   return items.filter(Boolean).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
 }
 
+function assetUrl(path) {
+  return new URL(path, window.location.href).href;
+}
+
 function renderInterventionProgram(report) {
   const box = el("#intervention-program");
   if (!box) return;
@@ -2086,7 +2090,7 @@ async function exportReportPdf() {
   await generateResult();
   if (!state.lastResult) return;
   const { caseData, report } = state.lastResult;
-  const logoUrl = `${window.location.origin}/assets/social-tools-logo.png`;
+  const logoUrl = assetUrl("assets/social-tools-logo.png");
   const resources = selectedResourceObjects().length ? selectedResourceObjects() : report.resources;
   const profileRows = profileReportRows(caseData)
     .map(([label, value]) => `<div><strong>${escapeHtml(label)}</strong><br>${escapeHtml(value || "No registrado")}</div>`)

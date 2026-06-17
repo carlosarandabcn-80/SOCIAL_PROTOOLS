@@ -6,6 +6,7 @@ const FRONTEND = path.join(ROOT, "frontend");
 const BACKEND = path.join(ROOT, "backend");
 const DOCS = path.join(ROOT, "docs");
 const ICD11_SOURCE = path.join(ROOT, "data", "icd11-es-2026.json");
+const ASSET_VERSION = "20260617-brand-roadmap";
 
 let icd11StaticCache = "";
 
@@ -48,9 +49,14 @@ function buildIndex() {
   return read("frontend/index.html")
     .replaceAll('href="/assets/', 'href="assets/')
     .replaceAll('src="/assets/', 'src="assets/')
-    .replaceAll('href="/styles.css"', 'href="styles.css"')
-    .replaceAll('src="/app.js"', 'src="app.js"')
-    .replace('    <script src="app.js"></script>', '    <script src="static-engine.js"></script>\n    <script src="app.js"></script>');
+    .replaceAll('href="/styles.css"', `href="styles.css?v=${ASSET_VERSION}"`)
+    .replaceAll('src="/app.js"', `src="app.js?v=${ASSET_VERSION}"`)
+    .replaceAll('src="assets/social-tools-logo.png"', `src="assets/social-tools-logo.png?v=${ASSET_VERSION}"`)
+    .replaceAll('src="assets/social-tools-wordmark.png"', `src="assets/social-tools-wordmark.png?v=${ASSET_VERSION}"`)
+    .replace(
+      `    <script src="app.js?v=${ASSET_VERSION}"></script>`,
+      `    <script src="static-engine.js?v=${ASSET_VERSION}"></script>\n    <script src="app.js?v=${ASSET_VERSION}"></script>`
+    );
 }
 
 function buildIcd11StaticIndex() {
