@@ -1,0 +1,19 @@
+{
+  "name": "laboratorio-intervencion-psicosocial",
+  "version": "1.0.0",
+  "description": "Laboratorio de Intervencion Psicosocial.",
+  "main": "backend/server.js",
+  "scripts": {
+    "prepare:icd11": "node scripts/prepare-icd11.js",
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js"
+  },
+  "keywords": [
+    "cie-11",
+    "educacion-social",
+    "unir",
+    "intervencion-socioeducativa"
+  ],
+  "author": "Carlos Aranda Sanchez",
+  "license": "MIT"
+}
