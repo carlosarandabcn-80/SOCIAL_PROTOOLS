@@ -328,6 +328,38 @@ h4 {
   font-size: 0.86rem;
 }
 
+.beta-line {
+  color: var(--electric-blue);
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.beta-line::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 7px;
+  border-radius: 999px;
+  background: var(--electric-blue);
+  vertical-align: 1px;
+}
+
+.icd-source {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin: 8px 0 0;
+  border: 1px solid rgba(56, 139, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(56, 139, 255, 0.08);
+  color: var(--muted);
+  padding: 5px 9px;
+  font-size: 0.74rem;
+  font-weight: 820;
+}
+
 .stepper {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

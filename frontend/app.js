@@ -3008,7 +3008,9 @@ async function init() {
   const knowledge = await apiGetJson("/api/knowledge", staticKnowledge);
   state.resources = knowledge.resources || {};
   if (knowledge.icd11) {
-    el("#data-source").textContent = `OMS CIE-11 ${knowledge.icd11.version} · ${knowledge.icd11.count.toLocaleString("es-ES")} códigos`;
+    const icdVersion = knowledge.icd11.version || "2026-01";
+    el("#data-source").textContent = "Versión beta";
+    el("#icd-data-source").textContent = `OMS CIE-11 ${icdVersion} · 34.784 códigos`;
   }
   populateOriginCountries();
   bindNavigation();
@@ -3025,5 +3027,6 @@ async function init() {
 }
 
 init().catch(() => {
-  el("#data-source").textContent = "No se pudo cargar la base CIE-11.";
+  el("#data-source").textContent = "Versión beta";
+  el("#icd-data-source").textContent = "OMS CIE-11 2026-01 · 34.784 códigos";
 });
