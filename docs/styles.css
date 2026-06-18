@@ -162,13 +162,12 @@ select:focus-visible {
 .brand-intro-card {
   display: grid;
   place-items: center;
-  gap: 24px;
-  width: min(340px, calc(100vw - 44px));
-  padding: 26px;
+  width: min(760px, calc(100vw - 34px));
+  padding: clamp(18px, 3vw, 34px);
   border: 1px solid rgba(56, 139, 255, 0.28);
-  border-radius: 28px;
+  border-radius: 22px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(56, 139, 255, 0.045)),
     rgba(6, 12, 26, 0.72);
   box-shadow:
     0 24px 70px rgba(0, 0, 0, 0.34),
@@ -178,26 +177,47 @@ select:focus-visible {
   animation: intro-card 4.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.brand-intro-card img {
-  width: min(190px, 52vw);
-  border-radius: 50%;
-  filter: none;
+.intro-logo-stage {
+  position: relative;
+  width: min(640px, 82vw);
+  overflow: hidden;
+  border: 1px solid rgba(56, 139, 255, 0.24);
+  border-radius: 18px;
+  background: #fff;
+  padding: clamp(10px, 1.8vw, 16px);
+  animation: intro-stage-lock 3.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.intro-mark {
+.intro-logo-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 0 33%, rgba(56, 139, 255, 0.18) 39%, transparent 47%);
+  transform: translateX(-115%);
+  animation: intro-scan 3.25s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.intro-wordmark {
   display: block;
+  width: 100%;
   height: auto;
+  border-radius: 0;
+  filter: none;
   object-fit: contain;
-  animation: intro-mark-pulse 3.6s ease-in-out forwards;
+  transform-origin: center;
+  animation: intro-wordmark-reveal 3.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.brand-intro-card span {
-  display: block;
-  width: min(210px, 58vw);
-  height: 3px;
+.intro-divider {
+  position: absolute;
+  top: 22%;
+  left: 36.8%;
+  width: 3px;
+  height: 56%;
   border-radius: 999px;
-  background: linear-gradient(90deg, transparent, #ffffff, #388bff, transparent);
-  animation: intro-line 3.1s ease-out forwards;
+  background: linear-gradient(180deg, transparent, var(--electric-blue) 18%, #7cb8ff 52%, var(--electric-blue) 82%, transparent);
+  transform-origin: center;
+  animation: intro-divider-drive 3.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .app-header {
@@ -1948,36 +1968,81 @@ svg text {
   }
 }
 
-@keyframes intro-mark-pulse {
+@keyframes intro-stage-lock {
   0% {
     opacity: 0;
-    transform: scale(0.82) rotate(-7deg);
+    transform: translateY(18px) scale(0.94);
   }
-  24% {
+  26% {
     opacity: 1;
-    transform: scale(1.04) rotate(0deg);
+    transform: translateY(0) scale(1);
   }
-  58% {
+  72% {
     opacity: 1;
-    transform: scale(1) rotate(0deg);
+    transform: translateY(0) scale(1);
   }
   100% {
-    opacity: 0.98;
-    transform: scale(1.02) rotate(0deg);
+    opacity: 1;
+    transform: translateY(0) scale(1.012);
   }
 }
 
-@keyframes intro-line {
+@keyframes intro-wordmark-reveal {
   0% {
     opacity: 0;
-    transform: scaleX(0);
+    transform: translateX(-18px) scale(0.98);
   }
-  38% {
+  22% {
     opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  70% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
   }
   100% {
+    opacity: 1;
+    transform: translateX(0) scale(1.006);
+  }
+}
+
+@keyframes intro-divider-drive {
+  0% {
+    opacity: 0;
+    transform: translateX(-44px) scaleY(0.18);
+  }
+  24% {
+    opacity: 1;
+    transform: translateX(0) scaleY(1);
+  }
+  42% {
+    opacity: 1;
+    transform: translateX(7px) scaleY(0.92);
+  }
+  58% {
+    transform: translateX(0) scaleY(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scaleY(1);
+  }
+}
+
+@keyframes intro-scan {
+  0% {
+    opacity: 0;
+    transform: translateX(-115%);
+  }
+  20% {
     opacity: 0.9;
-    transform: scaleX(1);
+  }
+  62% {
+    opacity: 0.55;
+    transform: translateX(58%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(115%);
   }
 }
 
@@ -2357,8 +2422,19 @@ svg text {
     width: min(100%, 230px);
   }
 
-  .brand-intro-card img {
-    width: min(180px, 54vw);
+  .brand-intro-card {
+    width: min(100% - 18px, 760px);
+    padding: 14px;
+  }
+
+  .intro-logo-stage {
+    width: min(100%, 640px);
+    border-radius: 14px;
+    padding: 8px;
+  }
+
+  .intro-divider {
+    width: 2px;
   }
 
   .form-nav,
@@ -2391,8 +2467,10 @@ svg text {
   }
 
   .brand-intro-card,
-  .intro-mark,
-  .brand-intro-card span {
+  .intro-logo-stage,
+  .intro-logo-stage::before,
+  .intro-wordmark,
+  .intro-divider {
     animation: none;
   }
 }
