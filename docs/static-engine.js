@@ -1896,6 +1896,7 @@ function generateStructuredReport(caseData = {}) {
   const ethicalFrame = caseData.ethicalFrame || {};
   const dualSummary = dualDiagnosisSummary(caseData.dualDiagnosis);
   const recognitionSummary = [
+    recognitions.noneRecognized ? "sin certificado, discapacidad reconocida ni dependencia reconocida" : "",
     recognitions.vulnerabilityCertificate ? "vulnerabilidad reconocida" : "",
     recognitions.vulnerabilityLevel ? `nivel ${recognitions.vulnerabilityLevel}` : "",
     recognitions.disabilityRecognized ? `discapacidad ${recognitions.disabilityPercent || "sin porcentaje registrado"}` : "",

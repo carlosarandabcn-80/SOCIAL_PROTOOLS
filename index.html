@@ -312,7 +312,11 @@
                     <p>Registra certificados o grados reconocidos para ajustar gravedad, recursos y recomendaciones.</p>
                   </div>
                 </div>
-                <div class="grid three">
+                <label class="check-row prominent recognition-none-check">
+                  <input id="no-recognitions" type="checkbox" />
+                  <span>Sin certificado, sin discapacidad reconocida y sin dependencia reconocida</span>
+                </label>
+                <div class="grid three recognition-dependent" data-recognition-dependent>
                   <label class="check-row inline-check">
                     <input id="has-vulnerability-certificate" type="checkbox" />
                     <span>Certificado / informe de vulnerabilidad</span>
@@ -326,7 +330,7 @@
                     <span>Dependencia reconocida</span>
                   </label>
                 </div>
-                <div class="grid three">
+                <div class="grid three recognition-dependent" data-recognition-dependent>
                   <div class="field">
                     <label for="vulnerability-level">Nivel de vulnerabilidad</label>
                     <select id="vulnerability-level">
@@ -352,7 +356,7 @@
                     </select>
                   </div>
                 </div>
-                <div class="grid two">
+                <div class="grid two recognition-dependent" data-recognition-dependent>
                   <div class="field">
                     <label for="recognized-supports">Apoyos o prestaciones reconocidas</label>
                     <textarea id="recognized-supports" rows="3" placeholder="Ayuda a domicilio, teleasistencia, prestacion, adaptaciones, apoyo escolar, etc."></textarea>
@@ -511,13 +515,8 @@
                     <span><i class="dot conflict"></i>Conflicto/riesgo</span>
                     <span><i class="line broken"></i>Ausente/ruptura</span>
                   </div>
+                  <div id="family-list" class="family-list hidden-family-list" hidden></div>
                 </article>
-
-                <aside class="editor-card">
-                  <h3>Detalle seleccionado</h3>
-                  <p id="selected-member" class="quiet-text">Selecciona un nodo del genograma o anade un vinculo.</p>
-                  <div id="family-list" class="family-list"></div>
-                </aside>
               </div>
 
               <article class="sociogram-card">
@@ -543,7 +542,10 @@
                   <span><i class="legend-risk"></i>Riesgo</span>
                   <span><i class="legend-core"></i>Persona usuaria</span>
                 </div>
-                <div id="social-list" class="family-list"></div>
+                <details class="context-editor">
+                  <summary>Editar nodos registrados</summary>
+                  <div id="social-list" class="family-list"></div>
+                </details>
               </article>
 
               <article class="resources-card">

@@ -560,6 +560,8 @@ function appendObservation(key, text) {
 }
 
 function syncRecognitionsToVariables() {
+  if (recognitionsNoneSelected()) return;
+
   const hasVulnerability = el("#has-vulnerability-certificate")?.checked;
   const vulnerabilityLevel = el("#vulnerability-level")?.value;
   const hasDisability = el("#has-disability")?.checked;
@@ -631,6 +633,32 @@ function getSocialProfileData() {
     incomeStatusLabel: optionText("#income-status"),
     barriers: el("#social-barriers")?.value.trim() || ""
   };
+}
+
+function recognitionsNoneSelected() {
+  return Boolean(el("#no-recognitions")?.checked);
+}
+
+function clearRecognitionDependentFields() {
+  all("[data-recognition-dependent] input, [data-recognition-dependent] select, [data-recognition-dependent] textarea").forEach((control) => {
+    if (control.type === "checkbox" || control.type === "radio") control.checked = false;
+    else control.value = "";
+  });
+}
+
+function updateRecognitionControls() {
+  const disabled = recognitionsNoneSelected();
+  if (disabled) clearRecognitionDependentFields();
+  all("[data-recognition-dependent]").forEach((node) => {
+    node.classList.toggle("is-disabled", disabled);
+    node.querySelectorAll("input, select, textarea").forEach((control) => {
+      control.disabled = disabled;
+    });
+  });
+  recalculateVariables();
+  renderVariables();
+  renderResources();
+  updateSummary();
 }
 
 function familyHealthApplies() {
@@ -909,6 +937,7 @@ function renderGenogram() {
 
 function renderFamilyList() {
   const list = el("#family-list");
+  if (!list) return;
   clearNode(list);
   if (!toolState("#tool-genogram")) {
     list.appendChild(create("p", "quiet-text", "Genograma desactivado. No se integrara en el informe."));
@@ -961,9 +990,12 @@ function openFamilyDialog(id = "") {
   el("#family-relation").value = member?.relation || "apoyo";
   el("#family-strength").value = member?.strength ?? 60;
   el("#family-notes").value = member?.notes || "";
-  el("#selected-member").textContent = member
-    ? `${member.name || member.role}: ${member.relation}, intensidad ${member.strength}`
-    : "Nuevo vinculo familiar o de apoyo.";
+  const selectedMember = el("#selected-member");
+  if (selectedMember) {
+    selectedMember.textContent = member
+      ? `${member.name || member.role}: ${member.relation}, intensidad ${member.strength}`
+      : "Nuevo vinculo familiar o de apoyo.";
+  }
   el("#family-dialog").showModal();
 }
 
@@ -1230,10 +1262,13 @@ function socialValenceLabel(valence) {
   return "apoyo";
 }
 
+const SOCIOGRAM_WIDTH = 1120;
+const SOCIOGRAM_HEIGHT = 660;
+
 function defaultSociogramPosition(index, total, width, height) {
   const centerX = width / 2;
   const centerY = height / 2;
-  const ring = total > 8 ? 190 : 150;
+  const ring = total > 10 ? 270 : total > 5 ? 225 : 180;
   const angle = (Math.PI * 2 * index) / Math.max(total, 1) - Math.PI / 2;
   return {
     x: centerX + Math.cos(angle) * ring,
@@ -1255,7 +1290,7 @@ function ensureSociogramPositions(nodes, width, height) {
 }
 
 function socialNodeRadius(node) {
-  return 19 + Math.min(13, Number(node.strength || 0) / 9);
+  return 26 + Math.min(18, Number(node.strength || 0) / 8);
 }
 
 function socialRelationPath(node, index, cx, cy) {
@@ -1348,8 +1383,8 @@ function bindSociogramDrag(box, width, height, cx, cy) {
 }
 
 function resetSociogramLayout() {
-  const width = 980;
-  const height = 520;
+  const width = SOCIOGRAM_WIDTH;
+  const height = SOCIOGRAM_HEIGHT;
   state.socialNodes.forEach((node, index) => {
     Object.assign(node, defaultSociogramPosition(index, state.socialNodes.length, width, height));
   });
@@ -1374,8 +1409,8 @@ function renderSociogram() {
     renderSocialList();
     return;
   }
-  const width = 980;
-  const height = 520;
+  const width = SOCIOGRAM_WIDTH;
+  const height = SOCIOGRAM_HEIGHT;
   const cx = width / 2;
   const cy = height / 2;
   ensureSociogramPositions(nodes, width, height);
@@ -1387,7 +1422,7 @@ function renderSociogram() {
       <g class="social-node" data-id="${escapeHtml(node.id)}" transform="translate(${node.x},${node.y})">
         <title>${escapeHtml(node.name)} · ${escapeHtml(socialValenceLabel(node.valence))} · intensidad ${escapeHtml(node.strength)}</title>
         <circle cx="0" cy="0" r="${socialNodeRadius(node)}" class="${socialNodeClass(node.valence)}"></circle>
-        <text x="0" y="4" text-anchor="middle">${escapeHtml(short(node.name, 12))}</text>
+        <text x="0" y="5" text-anchor="middle">${escapeHtml(short(node.name, 15))}</text>
         <text x="0" y="${socialNodeRadius(node) + 16}" text-anchor="middle" class="social-node-meta">${escapeHtml(node.type)} · ${escapeHtml(node.strength)}</text>
       </g>
     `)
@@ -1410,7 +1445,7 @@ function renderSociogram() {
       </defs>
       <rect x="0" y="0" width="${width}" height="${height}" class="svg-bg"></rect>
       ${lines}
-      <circle cx="${cx}" cy="${cy}" r="48" class="person-core sociogram-core"></circle>
+      <circle cx="${cx}" cy="${cy}" r="58" class="person-core sociogram-core"></circle>
       <text x="${cx}" y="${cy + 5}" text-anchor="middle" class="person-label">CASO</text>
       ${markup}
       ${emptyHint}
@@ -1467,7 +1502,7 @@ function saveSocialNode() {
   const existing = state.socialNodes.find((node) => node.id === id);
   const position = existing
     ? { x: existing.x, y: existing.y }
-    : defaultSociogramPosition(state.socialNodes.length, state.socialNodes.length + 1, 980, 520);
+    : defaultSociogramPosition(state.socialNodes.length, state.socialNodes.length + 1, SOCIOGRAM_WIDTH, SOCIOGRAM_HEIGHT);
   const payload = {
     id: id || `social-${Date.now()}-${Math.random().toString(16).slice(2)}`,
     name: el("#social-name").value.trim() || "Nodo social",
@@ -1829,6 +1864,7 @@ function buildCaseData() {
   const ethicalFrame = getEthicalFrameData();
   const selectedResources = selectedResourceObjects();
   const healthApplies = familyHealthApplies();
+  const noRecognitions = recognitionsNoneSelected();
   const familyMembers = state.familyMembers.map((member) =>
     healthApplies ? member : { ...member, healthIssues: [] }
   );
@@ -1861,14 +1897,15 @@ function buildCaseData() {
     housing: el("#case-housing").value,
     socialProfile,
     recognitions: {
-      vulnerabilityCertificate: el("#has-vulnerability-certificate").checked,
-      vulnerabilityLevel: el("#vulnerability-level").value,
-      disabilityRecognized: el("#has-disability").checked,
-      disabilityPercent: el("#disability-percent").value,
-      dependencyRecognized: el("#has-dependency").checked,
-      dependencyGrade: el("#dependency-grade").value,
-      supports: el("#recognized-supports").value,
-      administrativeNotes: el("#admin-notes").value
+      noneRecognized: noRecognitions,
+      vulnerabilityCertificate: !noRecognitions && el("#has-vulnerability-certificate").checked,
+      vulnerabilityLevel: noRecognitions ? "" : el("#vulnerability-level").value,
+      disabilityRecognized: !noRecognitions && el("#has-disability").checked,
+      disabilityPercent: noRecognitions ? "" : el("#disability-percent").value,
+      dependencyRecognized: !noRecognitions && el("#has-dependency").checked,
+      dependencyGrade: noRecognitions ? "" : el("#dependency-grade").value,
+      supports: noRecognitions ? "" : el("#recognized-supports").value,
+      administrativeNotes: noRecognitions ? "" : el("#admin-notes").value
     },
     familyHealthApplies: healthApplies,
     familyHealthProblems: healthApplies ? el("#family-health-problems").value : "",
@@ -2475,6 +2512,9 @@ function formatSocialProfile(profile = {}) {
 }
 
 function formatRecognitions(recognitions = {}) {
+  if (recognitions.noneRecognized) {
+    return "Consta explicitamente: sin certificado, sin discapacidad reconocida y sin dependencia reconocida.";
+  }
   const parts = [];
   if (recognitions.vulnerabilityCertificate) parts.push("Certificado/informe de vulnerabilidad");
   if (recognitions.vulnerabilityLevel) parts.push(`Nivel vulnerabilidad: ${recognitions.vulnerabilityLevel}`);
@@ -2566,6 +2606,22 @@ function bindFamilyControls() {
   el("#layout-sociogram").addEventListener("click", resetSociogramLayout);
   el("#clear-sociogram").addEventListener("click", clearSociogram);
   el("#save-social-node").addEventListener("click", saveSocialNode);
+}
+
+function refreshRecognitionVariables() {
+  recalculateVariables();
+  renderVariables();
+  renderResources();
+  updateSummary();
+}
+
+function bindRecognitionControls() {
+  el("#no-recognitions")?.addEventListener("change", updateRecognitionControls);
+  all("[data-recognition-dependent] input, [data-recognition-dependent] select, [data-recognition-dependent] textarea").forEach((control) => {
+    control.addEventListener("input", refreshRecognitionVariables);
+    control.addEventListener("change", refreshRecognitionVariables);
+  });
+  updateRecognitionControls();
 }
 
 function bindDiagnosisControls() {
@@ -2796,6 +2852,7 @@ function resetWorkspace() {
   el("#tool-genogram").checked = false;
   el("#tool-sociogram").checked = false;
   el("#tool-resource-map").checked = false;
+  el("#no-recognitions").checked = false;
   el("#family-health-applies").checked = false;
   el("#include-prevention-program").checked = false;
   el("#dual-diagnosis-enabled").checked = false;
@@ -2808,6 +2865,7 @@ function resetWorkspace() {
   el("#result-empty").classList.remove("hidden");
   el("#result-report").classList.add("hidden");
   renderVariables();
+  updateRecognitionControls();
   updateFamilyHealthApplicability();
   renderMemberHealthPanel();
   setStep(1);
@@ -2826,6 +2884,7 @@ async function init() {
   populateOriginCountries();
   bindNavigation();
   bindFamilyControls();
+  bindRecognitionControls();
   bindDiagnosisControls();
   bindSummaryInputs();
   bindAgeSelect();

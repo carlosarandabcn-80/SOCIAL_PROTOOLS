@@ -584,6 +584,27 @@ textarea {
   border-color: rgba(255, 126, 126, 0.48);
 }
 
+.recognition-none-check {
+  border-color: rgba(56, 139, 255, 0.58);
+  background:
+    linear-gradient(135deg, rgba(56, 139, 255, 0.18), rgba(65, 208, 216, 0.08)),
+    var(--surface-3);
+  box-shadow: 0 12px 30px rgba(56, 139, 255, 0.08);
+}
+
+.recognition-none-check span {
+  font-weight: 900;
+}
+
+.recognition-dependent {
+  transition: opacity 0.18s ease, filter 0.18s ease;
+}
+
+.recognition-dependent.is-disabled {
+  opacity: 0.52;
+  filter: grayscale(0.25);
+}
+
 .check-row input,
 .family-checks input,
 .radio-grid input {
@@ -749,7 +770,7 @@ textarea {
 
 .visual-workbench {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 330px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
 }
 
@@ -758,7 +779,7 @@ textarea {
 }
 
 .genogram {
-  min-height: 440px;
+  min-height: 560px;
   border: 1px solid var(--line-soft);
   border-radius: 8px;
   background:
@@ -770,7 +791,7 @@ textarea {
 .genogram svg {
   display: block;
   width: 100%;
-  height: auto;
+  height: clamp(560px, 52vw, 720px);
 }
 
 .svg-bg {
@@ -840,18 +861,18 @@ textarea {
 
 svg text {
   fill: var(--text);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 760;
 }
 
 .svg-muted {
   fill: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .svg-health {
   fill: var(--ink);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 900;
 }
 
@@ -907,6 +928,10 @@ svg text {
   gap: 8px;
   max-height: 500px;
   overflow: auto;
+}
+
+.hidden-family-list[hidden] {
+  display: none;
 }
 
 .family-row {
@@ -1079,7 +1104,7 @@ svg text {
 }
 
 .sociogram {
-  min-height: 520px;
+  min-height: 680px;
   border: 1px solid var(--line-soft);
   border-radius: 8px;
   background:
@@ -1094,7 +1119,7 @@ svg text {
 .sociogram svg {
   display: block;
   width: 100%;
-  height: clamp(480px, 52vw, 620px);
+  height: clamp(650px, 58vw, 780px);
   touch-action: none;
 }
 
@@ -1120,7 +1145,7 @@ svg text {
 
 .social-node-meta {
   fill: var(--muted);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0;
 }
@@ -1170,6 +1195,24 @@ svg text {
   width: 12px;
   height: 12px;
   border-radius: 999px;
+}
+
+.context-editor {
+  margin-top: 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  background: var(--surface-3);
+  padding: 10px 12px;
+}
+
+.context-editor summary {
+  cursor: pointer;
+  color: var(--text);
+  font-weight: 900;
+}
+
+.context-editor .family-list {
+  margin-top: 10px;
 }
 
 .legend-support {
@@ -1849,18 +1892,26 @@ svg text {
 }
 
 .reset-surface {
-  padding: 0;
+  display: flex;
+  justify-content: center;
+  padding: 12px;
   overflow: hidden;
+  border-color: rgba(56, 139, 255, 0.34);
+  background:
+    linear-gradient(135deg, rgba(56, 139, 255, 0.12), rgba(65, 208, 216, 0.05)),
+    var(--surface);
 }
 
 .danger-action {
-  width: 100%;
-  min-height: 54px;
+  width: auto;
+  min-height: 38px;
   border: 0;
-  border-radius: 0;
-  background: linear-gradient(135deg, var(--electric-blue), var(--red));
+  border-radius: 7px;
+  background: var(--electric-blue);
   color: white;
-  padding: 0 16px;
+  padding: 0 14px;
+  box-shadow: 0 12px 24px rgba(56, 139, 255, 0.24);
+  font-size: 0.78rem;
   text-transform: uppercase;
 }
 
