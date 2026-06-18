@@ -2806,6 +2806,52 @@ function bindAccessibilityControls() {
   applyAccessibilityState();
 }
 
+const leaveWarningMessage =
+  "Social Protools no almacena datos del caso. Exporta el informe a PDF antes de salir si quieres conservar el trabajo.";
+
+function showLeaveWarningDialog() {
+  const dialog = el("#leave-warning-dialog");
+  if (dialog?.showModal && !dialog.open) {
+    dialog.showModal();
+    return;
+  }
+  if (!dialog?.open) {
+    window.alert(leaveWarningMessage);
+  }
+}
+
+function goToPdfExport() {
+  const dialog = el("#leave-warning-dialog");
+  if (dialog?.open) dialog.close();
+  setStep(3);
+  requestAnimationFrame(() => {
+    el("#export-pdf")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    el("#export-pdf")?.focus({ preventScroll: true });
+  });
+}
+
+function bindSessionProtection() {
+  if (window.history?.replaceState && window.history?.pushState) {
+    window.history.replaceState({ socialProtools: "workspace" }, "", window.location.href);
+    window.history.pushState({ socialProtools: "guard" }, "", window.location.href);
+    window.addEventListener("popstate", () => {
+      window.history.pushState({ socialProtools: "guard" }, "", window.location.href);
+      showLeaveWarningDialog();
+    });
+  }
+
+  window.addEventListener("beforeunload", (event) => {
+    event.preventDefault();
+    event.returnValue = leaveWarningMessage;
+    return leaveWarningMessage;
+  });
+
+  el("#leave-warning-stay")?.addEventListener("click", () => {
+    el("#leave-warning-dialog")?.close();
+  });
+  el("#leave-warning-export")?.addEventListener("click", goToPdfExport);
+}
+
 function bindNavigation() {
   all(".stepper button").forEach((button) => {
     button.addEventListener("click", () => setStep(button.dataset.step));
@@ -2972,6 +3018,7 @@ async function init() {
   bindSummaryInputs();
   bindAgeSelect();
   bindAccessibilityControls();
+  bindSessionProtection();
   resetWorkspace();
   const requestedStep = Number(new URLSearchParams(window.location.search).get("step") || 1);
   if ([1, 2, 3].includes(requestedStep)) setStep(requestedStep);

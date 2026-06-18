@@ -24,11 +24,6 @@
           <img class="app-logo" src="/assets/social-tools-wordmark.png" alt="Social Protools" />
           <div class="brand-title">
             <h1>Laboratorio de Intervención Psicosocial</h1>
-            <div class="brand-signal" aria-hidden="true">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
           </div>
         </div>
       </header>
@@ -920,6 +915,27 @@
             <textarea id="social-notes" rows="3" placeholder="Disponibilidad, frecuencia, apoyo, conflicto, barreras..."></textarea>
           </div>
           <button id="save-social-node" class="primary-action" type="button">Guardar nodo social</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="leave-warning-dialog" class="leave-warning-dialog" aria-labelledby="leave-warning-title">
+      <form method="dialog">
+        <div class="dialog-header">
+          <div>
+            <p class="overline">Proteccion de la sesion</p>
+            <h2 id="leave-warning-title">Antes de salir</h2>
+          </div>
+        </div>
+        <p>
+          Esta aplicacion no almacena datos del caso. Si sales, recargas o retrocedes, el trabajo introducido puede perderse.
+        </p>
+        <p>
+          Para conservar el caso, genera el informe y exportalo a PDF antes de abandonar la sesion.
+        </p>
+        <div class="leave-warning-actions">
+          <button id="leave-warning-stay" class="secondary-action" type="button">Permanecer aqui</button>
+          <button id="leave-warning-export" class="primary-action" type="button">Ir a exportar PDF</button>
         </div>
       </form>
     </dialog>

@@ -6,14 +6,14 @@
     <title>Laboratorio de Intervención Psicosocial</title>
     <link rel="icon" type="image/png" href="assets/social-tools-logo.png" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="styles.css?v=20260618-intro-wordmark-motion" />
+    <link rel="stylesheet" href="styles.css?v=20260618-session-guard" />
   </head>
   <body>
     <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
     <div class="brand-intro" aria-hidden="true">
       <div class="brand-intro-card">
         <div class="intro-logo-stage">
-          <img class="intro-wordmark" src="assets/social-tools-wordmark.png?v=20260618-intro-wordmark-motion" alt="" />
+          <img class="intro-wordmark" src="assets/social-tools-wordmark.png?v=20260618-session-guard" alt="" />
           <span class="intro-divider"></span>
         </div>
       </div>
@@ -21,14 +21,9 @@
     <main id="main-content" class="app-shell" tabindex="-1">
       <header class="app-header">
         <div class="brand-lockup">
-          <img class="app-logo" src="assets/social-tools-wordmark.png?v=20260618-intro-wordmark-motion" alt="Social Protools" />
+          <img class="app-logo" src="assets/social-tools-wordmark.png?v=20260618-session-guard" alt="Social Protools" />
           <div class="brand-title">
             <h1>Laboratorio de Intervención Psicosocial</h1>
-            <div class="brand-signal" aria-hidden="true">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
           </div>
         </div>
       </header>
@@ -594,7 +589,7 @@
 
                 <article class="report-hero">
                   <div class="report-brand">
-                    <img src="assets/social-tools-wordmark.png?v=20260618-intro-wordmark-motion" alt="Social Protools" />
+                    <img src="assets/social-tools-wordmark.png?v=20260618-session-guard" alt="Social Protools" />
                     <div>
                       <p class="overline">Informe de orientacion socioeducativa</p>
                       <h3 id="report-title">Caso</h3>
@@ -748,7 +743,7 @@
 
     <section class="accessibility-widget" aria-label="Accesibilidad digital">
       <button id="accessibility-toggle" class="accessibility-toggle" type="button" aria-expanded="false" aria-controls="accessibility-panel" title="Accesibilidad">
-        <img src="assets/accessibility-universal.svg?v=20260618-intro-wordmark-motion" alt="" aria-hidden="true" />
+        <img src="assets/accessibility-universal.svg?v=20260618-session-guard" alt="" aria-hidden="true" />
         <span class="sr-only">Abrir accesibilidad digital</span>
       </button>
       <div id="accessibility-panel" class="accessibility-panel hidden">
@@ -924,8 +919,29 @@
       </form>
     </dialog>
 
+    <dialog id="leave-warning-dialog" class="leave-warning-dialog" aria-labelledby="leave-warning-title">
+      <form method="dialog">
+        <div class="dialog-header">
+          <div>
+            <p class="overline">Proteccion de la sesion</p>
+            <h2 id="leave-warning-title">Antes de salir</h2>
+          </div>
+        </div>
+        <p>
+          Esta aplicacion no almacena datos del caso. Si sales, recargas o retrocedes, el trabajo introducido puede perderse.
+        </p>
+        <p>
+          Para conservar el caso, genera el informe y exportalo a PDF antes de abandonar la sesion.
+        </p>
+        <div class="leave-warning-actions">
+          <button id="leave-warning-stay" class="secondary-action" type="button">Permanecer aqui</button>
+          <button id="leave-warning-export" class="primary-action" type="button">Ir a exportar PDF</button>
+        </div>
+      </form>
+    </dialog>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="static-engine.js?v=20260618-intro-wordmark-motion"></script>
-    <script src="app.js?v=20260618-intro-wordmark-motion"></script>
+    <script src="static-engine.js?v=20260618-session-guard"></script>
+    <script src="app.js?v=20260618-session-guard"></script>
   </body>
 </html>
