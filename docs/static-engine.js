@@ -1693,7 +1693,7 @@ function buildProfessionalSynthesis(caseData = {}, inference = {}, familyHealth 
       title: "Formulacion provisional del caso",
       text:
         `El caso se formula como una situacion de analisis socioeducativo provisional con prioridad ${String(inference.priority || "preventiva").toLowerCase()} ` +
-        `y una puntuacion orientativa de ${inference.priorityScore || 0}/100. Las dimensiones activas son: ${active}. ` +
+        `segun la convergencia de variables activas: ${active}. ` +
         `${dualSummary ? `Consta patologia dual o diagnostico combinado (${dualSummary}), que debe interpretarse con especial cautela clinica y social. ` : ""}` +
         `${ethicalSummary ? `Marco etico y de seguridad registrado: ${ethicalSummary}. ` : ""}` +
         `La finalidad no es cerrar un diagnostico sanitario, sino ordenar necesidades, apoyos, barreras y decisiones educativas verificables.`

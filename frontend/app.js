@@ -1941,6 +1941,7 @@ function buildCaseData() {
 
 function renderMetricBlocks(variables = {}) {
   const grid = el("#metric-grid");
+  if (!grid) return;
   clearNode(grid);
   Object.entries(metricLabels).forEach(([key, label]) => {
     const variable = variables[key] || {};
@@ -2229,7 +2230,7 @@ async function generateResult() {
       state.selectedDiagnosis ? `${state.selectedDiagnosis.code} - ${state.selectedDiagnosis.title}` : "",
       dualDiagnosisSummary()
     ]) || "Caso sin diagnostico CIE-11";
-  el("#report-priority").textContent = `Prioridad: ${report.priority} (${report.priorityScore}/100)`;
+  el("#report-priority").textContent = `Prioridad orientativa: ${report.priority}`;
   renderSocialProfileReport(caseData);
   el("#report-interpretation").textContent = report.globalDiagnosis;
   renderProfessionalSynthesis(report);
@@ -2248,17 +2249,15 @@ async function exportReportPdf() {
   await generateResult();
   if (!state.lastResult) return;
   const { caseData, report } = state.lastResult;
-  const logoUrl = assetUrl("assets/social-tools-wordmark.png");
+  const logoUrl = assetUrl("assets/social-tools-logo.png");
+  const reportDate = new Intl.DateTimeFormat("es-ES", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+  }).format(new Date());
   const resources = selectedResourceObjects().length ? selectedResourceObjects() : report.resources;
   const profileRows = profileReportRows(caseData)
     .map(([label, value]) => `<div><strong>${escapeHtml(label)}</strong><br>${escapeHtml(value || "No registrado")}</div>`)
-    .join("");
-  const variableRows = Object.entries(metricLabels)
-    .map(([key, label]) => {
-      const variable = caseData.variables?.[key] || {};
-      const value = variable.active ? Number(variable.severity || 0) : 0;
-      return `<div class="metric-pdf"><strong>${escapeHtml(label)}</strong><span>${value}/100</span><i style="width:${value}%"></i><small>${escapeHtml(variable.observations || "Sin observaciones inferidas.")}</small></div>`;
-    })
     .join("");
   const familyRows = caseData.family?.noNetwork
     ? `<div class="card warning"><strong>Sin red familiar / sin red de apoyo identificada.</strong></div>`
@@ -2346,47 +2345,132 @@ async function exportReportPdf() {
         <meta charset="utf-8" />
         <title>${escapeHtml(report.title)}</title>
         <style>
-          @page { size: A4; margin: 16mm; }
+          @page { size: A4; margin: 22mm 17mm 18mm; }
           * { box-sizing: border-box; }
-          body { margin: 0; color: #17212b; font-family: Arial, sans-serif; line-height: 1.45; }
-          header { padding: 18px; color: white; background: linear-gradient(135deg, #0f5f72, #1d8fa3 58%, #388bff); border-radius: 14px; }
-          .pdf-brand { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
-          .pdf-brand img { width: 190px; max-width: 58%; height: auto; object-fit: contain; border-radius: 12px; background: #fff; padding: 6px 10px; border: 1px solid rgba(56, 139, 255, .32); box-shadow: 0 10px 26px rgba(0, 0, 0, .16); }
-          .pdf-brand p { margin: 0 0 4px; text-transform: uppercase; font-size: 11px; letter-spacing: .08em; opacity: .88; }
-          h1 { margin: 0 0 8px; font-size: 26px; }
-          h2 { margin: 22px 0 10px; color: #0f5f72; font-size: 17px; border-bottom: 2px solid #d7eef3; padding-bottom: 6px; }
-          h3 { margin: 12px 0 6px; color: #1a2a35; font-size: 14px; }
-          a { color: #0f5f72; overflow-wrap: anywhere; }
-          .meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
-          .meta div, .card { border: 1px solid #d8e4ea; border-radius: 10px; padding: 10px; background: #f7fbfc; }
-          .badge { display: inline-block; padding: 6px 10px; border-radius: 999px; background: #eaf8fb; color: #0f5f72; font-weight: 700; }
-          ul { margin: 8px 0 0 20px; padding: 0; }
+          :root { --blue: #388bff; --cyan: #41d0d8; --ink: #13202b; --muted: #566675; --line: #d9e6f2; --soft: #f5f9ff; }
+          body {
+            margin: 0;
+            background: #fff;
+            color: var(--ink);
+            font-family: Arial, sans-serif;
+            font-size: 11.5px;
+            line-height: 1.56;
+          }
+          .page-chrome {
+            position: fixed;
+            top: 7mm;
+            left: 17mm;
+            right: 17mm;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            pointer-events: none;
+          }
+          .page-chrome img {
+            width: 15mm;
+            height: 15mm;
+            object-fit: contain;
+          }
+          .page-chrome span {
+            color: #627386;
+            font-size: 9.5px;
+            font-weight: 700;
+            letter-spacing: .02em;
+          }
+          header {
+            margin: 0 0 18px;
+            padding: 20px 20px 18px;
+            border: 1px solid var(--line);
+            border-left: 7px solid var(--blue);
+            border-radius: 16px;
+            background:
+              linear-gradient(135deg, rgba(56, 139, 255, .11), rgba(65, 208, 216, .05)),
+              #fff;
+          }
+          .eyebrow {
+            margin: 0 0 6px;
+            color: var(--blue);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+          }
+          h1 { margin: 0 0 8px; color: #0a1420; font-size: 27px; line-height: 1.08; }
+          h2 {
+            margin: 24px 0 10px;
+            color: #0a57d6;
+            font-size: 16px;
+            border-bottom: 1.5px solid rgba(56, 139, 255, .26);
+            padding-bottom: 6px;
+          }
+          h3 { margin: 4px 0 6px; color: #142232; font-size: 13px; }
+          p { margin: 0 0 8px; }
+          a { color: #0a57d6; overflow-wrap: anywhere; text-decoration: none; }
+          section { break-inside: avoid; page-break-inside: avoid; }
+          ul { margin: 8px 0 0 18px; padding: 0; }
           li { margin-bottom: 5px; }
-          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-          .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-          .program-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-          .roadmap { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-          .phase { border-left: 5px solid #1d8fa3; }
-          .source { border-left: 5px solid #388bff; }
-          .warning { border-color: #f2b8b5; background: #fff4f3; }
-          .metric-grid-pdf { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-          .metric-pdf { border: 1px solid #d8e4ea; border-radius: 10px; padding: 10px; background: #f7fbfc; }
-          .metric-pdf span { float: right; color: #0f5f72; font-weight: 700; }
-          .metric-pdf i { display: block; clear: both; height: 6px; margin: 8px 0; border-radius: 999px; background: linear-gradient(90deg, #0f5f72, #6ac6a5); }
-          .metric-pdf small { display: block; color: #52616b; }
-          footer { margin-top: 24px; color: #5b6b75; font-size: 11px; }
+          .meta,
+          .grid,
+          .grid3,
+          .program-grid,
+          .roadmap,
+          .section-stack {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+          }
+          .meta { margin-top: 14px; }
+          .meta div,
+          .card {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 11px 12px;
+            background: var(--soft);
+          }
+          .badge {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 6px;
+            padding: 6px 10px;
+            border: 1px solid rgba(56, 139, 255, .28);
+            border-radius: 999px;
+            background: #fff;
+            color: #0a57d6;
+            font-size: 10.5px;
+            font-weight: 800;
+          }
+          .phase-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+          }
+          .phase {
+            break-inside: avoid;
+            border-left: 5px solid var(--cyan);
+            background: #f7fbff;
+          }
+          .source { border-left: 5px solid var(--blue); background: #f7fbff; }
+          .warning { border-color: #f2b8b5; background: #fff7f6; }
+          footer {
+            margin-top: 24px;
+            border-top: 1px solid var(--line);
+            padding-top: 10px;
+            color: #647484;
+            font-size: 10px;
+          }
         </style>
       </head>
       <body>
+        <div class="page-chrome">
+          <img src="${escapeHtml(logoUrl)}" alt="" />
+          <span>${escapeHtml(reportDate)}</span>
+        </div>
         <header>
-          <div class="pdf-brand">
-            <img src="${escapeHtml(logoUrl)}" alt="Social Protools" />
-            <div>
-              <p>Informe socioeducativo</p>
-              <h1>Laboratorio de Intervención Psicosocial</h1>
-            </div>
-          </div>
-          <span class="badge">Prioridad ${escapeHtml(report.priority)} · ${report.priorityScore}/100</span>
+          <p class="eyebrow">Informe socioeducativo provisional</p>
+          <h1>Laboratorio de Intervencion Psicosocial</h1>
+          <p>Documento de apoyo para estudio de caso, orientacion profesional y planificacion psicosocial con cautela academica.</p>
+          <span class="badge">Prioridad orientativa: ${escapeHtml(report.priority)}</span>
           <div class="meta">
             <div><strong>Persona/codigo</strong><br>${escapeHtml(caseData.person?.name || caseData.person?.code || "No registrado")}</div>
             <div><strong>Ciudad</strong><br>${escapeHtml(caseData.city || "No registrada")}</div>
@@ -2399,7 +2483,6 @@ async function exportReportPdf() {
             : ""
         }
         <section><h2>Ficha social transcrita</h2><div class="grid3">${profileRows}</div></section>
-        <section><h2>Variables inferidas del caso</h2><div class="metric-grid-pdf">${variableRows}</div></section>
         <section><h2>Diagnostico socioeducativo global</h2><p>${escapeHtml(report.globalDiagnosis)}</p></section>
         <section><h2>Informe provisional integrado</h2><div class="program-grid">${synthesisRows || '<div class="card">Sin sintesis profesional generada.</div>'}</div></section>
         ${caseData.dualDiagnosis?.applies ? `<section><h2>Patologia dual / diagnostico combinado</h2><div class="card"><p>${escapeHtml(dualDiagnosisText)}</p></div></section>` : ""}
@@ -2410,7 +2493,7 @@ async function exportReportPdf() {
         <section><h2>Analisis cruzado de variables</h2><ul>${report.crossAnalysis.map((item) => `<li>${escapeHtml(item.text)}</li>`).join("") || "<li>Sin reglas criticas activadas.</li>"}</ul></section>
         <section><h2>Observaciones profesionales</h2><ul>${report.professionalObservations.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></section>
         <section><h2>Propuesta provisional de intervención psicosocial</h2><div class="program-grid">${programSections || '<div class="card">Sin propuesta generada.</div>'}</div></section>
-        <section><h2>Fases del itinerario</h2><div class="roadmap">${phaseRows || '<div class="card">Sin fases generadas.</div>'}</div></section>
+        <section><h2>Fases del itinerario</h2><div class="phase-grid">${phaseRows || '<div class="card">Sin fases generadas.</div>'}</div></section>
         ${
           report.familyHealthAnalysis?.enabled && report.familyHealthAnalysis.detected?.length
             ? `<section><h2>Unidad familiar: CIE-11, necesidades y prevencion</h2>${
@@ -2445,7 +2528,7 @@ async function exportReportPdf() {
         <footer>Herramienta de orientacion socioeducativa creada en entorno educativo UNIR para la asignatura Salud, Dependencia y Vulnerabilidad Social. No sustituye diagnostico ni tratamiento clinico. Carlos Aranda Sánchez (2026).</footer>
         <script>
           window.addEventListener('load', () => {
-            const logo = document.querySelector('.pdf-brand img');
+            const logo = document.querySelector('.page-chrome img');
             const printNow = () => setTimeout(() => window.print(), 260);
             if (logo && !logo.complete) {
               logo.addEventListener('load', printNow, { once: true });
