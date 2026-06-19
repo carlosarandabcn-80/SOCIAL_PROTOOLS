@@ -1476,7 +1476,7 @@ svg text {
 
 .report-flow {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
   gap: 10px;
 }
 
@@ -1623,6 +1623,7 @@ svg text {
 .intervention-program,
 .academic-basis,
 .evidence-sources,
+.clinical-social-matrix,
 .professional-synthesis {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1632,6 +1633,7 @@ svg text {
 .intervention-card,
 .academic-card,
 .source-card,
+.matrix-card,
 .synthesis-card {
   border: 1px solid var(--line-soft);
   border-radius: 8px;
@@ -1652,6 +1654,7 @@ svg text {
 .intervention-card h4,
 .academic-card strong,
 .source-card strong,
+.matrix-card strong,
 .synthesis-card strong {
   color: var(--text);
 }
@@ -1659,8 +1662,49 @@ svg text {
 .intervention-card strong,
 .academic-card span,
 .source-card a,
+.matrix-card span,
 .synthesis-card strong {
   display: block;
+}
+
+.matrix-card {
+  display: grid;
+  gap: 10px;
+}
+
+.matrix-card-wide {
+  grid-column: 1 / -1;
+}
+
+.matrix-card span {
+  color: var(--electric-blue);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.matrix-card dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.matrix-card dt {
+  color: var(--cyan);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.matrix-card dd {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.matrix-card ul {
+  margin-top: 0;
 }
 
 .synthesis-card {
@@ -2475,6 +2519,7 @@ svg text {
   .intervention-program,
   .academic-basis,
   .evidence-sources,
+  .clinical-social-matrix,
   .professional-synthesis,
   .member-health-panel,
   .profile-report,
@@ -2512,6 +2557,7 @@ svg text {
   .intervention-program,
   .academic-basis,
   .evidence-sources,
+  .clinical-social-matrix,
   .professional-synthesis,
   .educational-sources,
   .source-mini-grid,

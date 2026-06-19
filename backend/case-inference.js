@@ -507,6 +507,154 @@ function dualDiagnosisSummary(dualDiagnosis = {}) {
     .join("; ");
 }
 
+function buildClinicalSocialMatrix(caseData = {}, inference = {}, familyHealth = {}) {
+  const variables = caseData.variables || {};
+  const profile = caseData.socialProfile || {};
+  const recognitions = caseData.recognitions || {};
+  const tools = caseData.tools || {};
+  const diagnosis = caseData.diagnosis || {};
+  const dualSummary = dualDiagnosisSummary(caseData.dualDiagnosis);
+  const familyHealthLabels = (familyHealth.detected || []).map((item) => item.label).join(", ");
+  const rows = [];
+  const hasClinicalRead = Boolean(
+    diagnosis.code ||
+      caseData.dualDiagnosis?.applies ||
+      variables.salud?.active ||
+      familyHealth.detected?.length ||
+      caseData.familyHealthIssues?.length
+  );
+  const hasSocialVulnerability = Boolean(
+    variables.vulnerabilidad?.active ||
+      variables.situacionEconomica?.active ||
+      recognitions.vulnerabilityCertificate ||
+      recognitions.vulnerabilityLevel ||
+      ["irregular", "sin_documentacion", "asilo"].includes(profile.administrativeStatus) ||
+      ["sin_permiso", "denegado", "caducado"].includes(profile.residencePermit) ||
+      ["sin_ingresos", "deudas", "ingresos_bajos"].includes(profile.incomeStatus)
+  );
+  const hasDependencyRead = Boolean(
+    variables.dependencia?.active ||
+      recognitions.dependencyRecognized ||
+      recognitions.dependencyGrade ||
+      recognitions.disabilityRecognized ||
+      Number(recognitions.disabilityPercent || 0) >= 33
+  );
+  const hasNetworkRead = Boolean(
+    variables.redSocial?.active ||
+      variables.contextoFamiliar?.active ||
+      tools.sociogram?.applies ||
+      tools.genogram?.applies ||
+      caseData.family?.noNetwork
+  );
+
+  if (hasClinicalRead) {
+    rows.push({
+      axis: "Lectura clinica prudente",
+      clinical:
+        `${diagnosis.code ? `CIE-11 principal: ${diagnosis.code} ${diagnosis.title || ""}. ` : ""}` +
+        `${caseData.diagnosisStatus ? `Estado clinico declarado: ${caseData.diagnosisStatus}. ` : ""}` +
+        `${dualSummary ? `Patologia dual o diagnostico combinado: ${dualSummary}. ` : ""}` +
+        `${familyHealthLabels ? `Salud familiar relevante: ${familyHealthLabels}. ` : ""}` +
+        "La Educacion Social no confirma diagnosticos; traduce informacion sanitaria en necesidades de apoyo, funcionamiento y acceso.",
+      vulnerability:
+        "El malestar o diagnostico puede intensificar estigma, aislamiento, discontinuidad de cuidados, perdida de rutinas y barreras de acceso cuando se combina con precariedad o baja red.",
+      coordination:
+        "Coordinar con atencion primaria, salud mental, adicciones, dependencia o recurso especializado segun conste, preservando consentimiento, confidencialidad y roles profesionales.",
+      indicators: [
+        "Citas sanitarias/sociales mantenidas o reprogramadas con apoyo.",
+        "Comprension de pautas, recursos y senales de alerta por la persona usuaria.",
+        "Reduccion de barreras practicas: transporte, idioma, documentacion, estigma o acompanamiento.",
+        "Continuidad de rutinas basicas: descanso, alimentacion, autocuidado, medicacion indicada o reduccion de danos si procede."
+      ]
+    });
+  }
+
+  if (hasSocialVulnerability) {
+    rows.push({
+      axis: "Vulnerabilidad social y determinantes",
+      clinical:
+        "Los determinantes sociales no son diagnostico clinico, pero condicionan salud, adherencia, pronostico social y participacion cotidiana.",
+      vulnerability:
+        [
+          variables.vulnerabilidad?.active ? "Vulnerabilidad social activa." : "",
+          variables.situacionEconomica?.active ? "Fragilidad economica registrada." : "",
+          profile.administrativeStatusLabel ? `Situacion administrativa: ${profile.administrativeStatusLabel}.` : "",
+          profile.residencePermitLabel ? `Permiso: ${profile.residencePermitLabel}.` : "",
+          profile.incomeStatusLabel ? `Ingresos/prestaciones: ${profile.incomeStatusLabel}.` : "",
+          recognitions.vulnerabilityCertificate ? "Existe certificado o informe de vulnerabilidad." : ""
+        ]
+          .filter(Boolean)
+          .join(" ") || "Se requiere completar condiciones materiales, derechos, vivienda, ingresos y red.",
+      coordination:
+        "Articular servicios sociales de atencion primaria, orientacion juridico-social, empleo, vivienda, prestaciones, tercer sector y recursos comunitarios de proximidad.",
+      indicators: [
+        "Documentacion, empadronamiento, prestaciones o citas administrativas iniciadas.",
+        "Acceso efectivo a recurso territorial y registro de barreras encontradas.",
+        "Mejora o estabilizacion de vivienda, ingresos, alimentacion, transporte o conectividad.",
+        "Participacion de la persona en decisiones y comprension de derechos y obligaciones."
+      ]
+    });
+  }
+
+  if (hasDependencyRead) {
+    rows.push({
+      axis: "Dependencia, discapacidad y autonomia",
+      clinical:
+        "La lectura se centra en funcionamiento, apoyos para actividades de la vida diaria, accesibilidad y calidad de vida, no en reducir la persona a su limitacion.",
+      vulnerability:
+        "La falta de apoyos graduados puede generar sobrecarga familiar, dependencia institucional, aislamiento, perdida de participacion y riesgo de cuidados no sostenibles.",
+      coordination:
+        "Coordinar reconocimiento o revision de dependencia/discapacidad, SAAD, servicios sociales, salud comunitaria, rehabilitacion, accesibilidad y respiro familiar si procede.",
+      indicators: [
+        "Apoyos necesarios identificados por actividad y entorno.",
+        "Solicitud, revision o seguimiento de grado/PIA/discapacidad documentada si procede.",
+        "Reduccion de sobrecarga de cuidados y mejora de accesibilidad.",
+        "Aumento de autonomia funcional o participacion en actividades significativas."
+      ]
+    });
+  }
+
+  if (hasNetworkRead) {
+    rows.push({
+      axis: "Red familiar, sociograma y comunidad",
+      clinical:
+        "La red condiciona sostenimiento emocional, adherencia a recursos, proteccion frente a crisis y recuperacion de proyecto cotidiano.",
+      vulnerability:
+        caseData.family?.noNetwork
+          ? "Consta ausencia de red familiar o de apoyo; aumenta riesgo de aislamiento y dependencia exclusiva de recursos formales."
+          : "Los apoyos, conflictos, intensidades relacionales y espacios comunitarios deben diferenciarse para no sobrecargar vinculos fragiles.",
+      coordination:
+        "Usar genograma y sociograma para pactar apoyos seguros, limites, derivaciones comunitarias y referentes profesionales sin exponer a la persona a vinculos de riesgo.",
+      indicators: [
+        "Numero de apoyos seguros y frecuencia de contacto registrada.",
+        "Vinculos de riesgo delimitados y plan de proteccion si procede.",
+        "Participacion en recurso comunitario, grupo, actividad formativa o espacio de apoyo.",
+        "Percepcion de apoyo, soledad y seguridad revisada periodicamente."
+      ]
+    });
+  }
+
+  if (!rows.length) {
+    rows.push({
+      axis: "Exploracion inicial",
+      clinical:
+        "No hay dimensiones suficientes para una lectura clinica-social consolidada; procede completar datos, consentimiento, diagnostico o indicios y contexto.",
+      vulnerability:
+        "La ausencia de datos no debe interpretarse como ausencia de necesidad; se recomienda explorar determinantes sociales, red, derechos, vivienda e ingresos.",
+      coordination:
+        "Primera coordinacion con servicios sociales de referencia y, si aparecen indicios de salud o riesgo, derivacion prudente al circuito correspondiente.",
+      indicators: [
+        "Ficha social minima completada.",
+        "Consentimiento y finalidad educativa/profesional aclarados.",
+        "Variables principales valoradas.",
+        "Primer objetivo pactado con la persona usuaria."
+      ]
+    });
+  }
+
+  return rows;
+}
+
 function buildProfessionalSynthesis(caseData = {}, inference = {}, familyHealth = {}, academicPrinciples = []) {
   const active = inference.active?.map((item) => item.label).join(", ") || "sin dimensiones activas suficientes";
   const dualSummary = dualDiagnosisSummary(caseData.dualDiagnosis);
@@ -737,6 +885,7 @@ function generateStructuredReport(caseData = {}) {
   const interventionProgram = buildInterventionProgram(caseData, inference, familyHealth);
   const academicPrinciples = interventionProgram.academicPrinciples;
   const professionalSynthesis = buildProfessionalSynthesis(caseData, inference, familyHealth, academicPrinciples);
+  const clinicalSocialMatrix = buildClinicalSocialMatrix(caseData, inference, familyHealth);
   const activeLabels = inference.active.map((item) => item.label).join(", ") || "sin variables activas";
   const diagnosisStatus = caseData.diagnosisStatus || "sin informacion clinica suficiente";
   const recognitions = caseData.recognitions || {};
@@ -792,6 +941,7 @@ function generateStructuredReport(caseData = {}) {
 
   const professionalObservations = [
     `La lectura del caso exige articular factores individuales, familiares, comunitarios e institucionales, siguiendo un enfoque de determinantes sociales de la salud.`,
+    `La matriz clinica-social ordena la relacion entre informacion sanitaria disponible, vulnerabilidad social, coordinacion sociosanitaria e indicadores evaluables propios de la Educacion Social.`,
     ethicalFrame.urgency && ethicalFrame.urgency !== "sin_urgencia"
       ? `La urgencia social inicial (${ethicalFrame.urgencyLabel || ethicalFrame.urgency}) exige priorizar seguridad, consentimiento posible, contraste de informacion y coordinacion de circuito antes de objetivos de medio plazo.`
       : "",
@@ -872,6 +1022,7 @@ function generateStructuredReport(caseData = {}) {
     objectives,
     strategies,
     recommendations,
+    clinicalSocialMatrix,
     professionalSynthesis,
     interventionProgram,
     resources: inference.recommendedResources,

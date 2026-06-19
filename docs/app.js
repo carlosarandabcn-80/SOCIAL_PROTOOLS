@@ -381,6 +381,7 @@ function staticReport(caseData) {
     strategies: ["Entrevista socioeducativa centrada en la persona.", "Coordinacion con servicios sociales y salud comunitaria."],
     recommendations: ["Diferenciar hechos, indicios e hipotesis.", "Evitar conclusiones clinicas no acreditadas."],
     professionalSynthesis: [],
+    clinicalSocialMatrix: [],
     interventionProgram: { phases: [], academicPrinciples: [] },
     resources: selectedResourceObjects(),
     familyHealthAnalysis: { detected: [], preventionPlan: [] },
@@ -2110,6 +2111,35 @@ function renderProfessionalSynthesis(report) {
   });
 }
 
+function renderClinicalSocialMatrix(report) {
+  const box = el("#clinical-social-matrix");
+  if (!box) return;
+  clearNode(box);
+  const rows = report.clinicalSocialMatrix || [];
+  if (!rows.length) {
+    box.appendChild(create("p", "quiet-text", "Genera el informe para construir la matriz clinica-social evaluable."));
+    return;
+  }
+  rows.forEach((row, index) => {
+    const card = create("article", `matrix-card${index === 0 ? " matrix-card-wide" : ""}`);
+    card.innerHTML = `
+      <span>Eje ${index + 1}</span>
+      <strong>${escapeHtml(row.axis || "Eje de analisis")}</strong>
+      <dl>
+        <dt>Lectura clinica prudente</dt>
+        <dd>${escapeHtml(row.clinical || "Pendiente de completar.")}</dd>
+        <dt>Vulnerabilidad social asociada</dt>
+        <dd>${escapeHtml(row.vulnerability || "Pendiente de completar.")}</dd>
+        <dt>Coordinacion sociosanitaria</dt>
+        <dd>${escapeHtml(row.coordination || "Pendiente de completar.")}</dd>
+        <dt>Indicadores evaluables</dt>
+        <dd><ul>${listMarkup(row.indicators || [])}</ul></dd>
+      </dl>
+    `;
+    box.appendChild(card);
+  });
+}
+
 function listMarkup(items = []) {
   return items.filter(Boolean).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
 }
@@ -2234,6 +2264,7 @@ async function generateResult() {
   renderSocialProfileReport(caseData);
   el("#report-interpretation").textContent = report.globalDiagnosis;
   renderProfessionalSynthesis(report);
+  renderClinicalSocialMatrix(report);
   renderMetricBlocks(state.variables);
   renderList("#report-needs", report.objectives);
   renderList("#report-risks", report.crossAnalysis.map((item) => item.text));
@@ -2262,9 +2293,10 @@ async function exportReportPdf() {
   const reportMapRows = [
     ["01", "Ficha social", "Datos personales, administrativos, formativos, laborales y red familiar declarada."],
     ["02", "Lectura socioeducativa", "Interpretacion global del caso con salud, dependencia y vulnerabilidad social."],
-    ["03", "Plan de intervencion", "Objetivos, metodologia, prevencion y fases de trabajo provisional."],
-    ["04", "Seguimiento", "Indicadores, cautelas profesionales y criterios de reajuste del itinerario."],
-    ["05", "Recursos territoriales", "Recursos institucionales y del tercer sector aplicables a la ciudad seleccionada."]
+    ["03", "Matriz clinica-social", "Relacion entre lectura clinica prudente, vulnerabilidad, coordinacion e indicadores evaluables."],
+    ["04", "Plan de intervencion", "Objetivos, metodologia, prevencion y fases de trabajo provisional."],
+    ["05", "Seguimiento", "Indicadores, cautelas profesionales y criterios de reajuste del itinerario."],
+    ["06", "Recursos territoriales", "Recursos institucionales y del tercer sector aplicables a la ciudad seleccionada."]
   ]
     .map(
       ([number, title, text]) => `
@@ -2350,6 +2382,26 @@ async function exportReportPdf() {
         <div class="card source">
           <h3>${escapeHtml(section.title)}</h3>
           <p>${escapeHtml(section.text)}</p>
+        </div>
+      `
+    )
+    .join("");
+  const matrixRows = (report.clinicalSocialMatrix || [])
+    .map(
+      (row, index) => `
+        <div class="card matrix">
+          <p class="eyebrow">Eje ${index + 1}</p>
+          <h3>${escapeHtml(row.axis || "Eje de analisis")}</h3>
+          <dl>
+            <dt>Lectura clinica prudente</dt>
+            <dd>${escapeHtml(row.clinical || "Pendiente de completar.")}</dd>
+            <dt>Vulnerabilidad social asociada</dt>
+            <dd>${escapeHtml(row.vulnerability || "Pendiente de completar.")}</dd>
+            <dt>Coordinacion sociosanitaria</dt>
+            <dd>${escapeHtml(row.coordination || "Pendiente de completar.")}</dd>
+            <dt>Indicadores evaluables</dt>
+            <dd><ul>${pdfList(row.indicators || [])}</ul></dd>
+          </dl>
         </div>
       `
     )
@@ -2497,6 +2549,22 @@ async function exportReportPdf() {
             background: #f7fbff;
           }
           .source { border-left: 5px solid var(--blue); background: #f7fbff; }
+          .matrix { border-left: 5px solid var(--blue); background: #f7fbff; }
+          .matrix dl {
+            display: grid;
+            gap: 6px;
+            margin: 0;
+          }
+          .matrix dt {
+            color: #0a57d6;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+          }
+          .matrix dd {
+            margin: 0 0 5px;
+            color: var(--muted);
+          }
           .warning { border-color: #f2b8b5; background: #fff7f6; }
           footer {
             margin-top: 24px;
@@ -2532,6 +2600,7 @@ async function exportReportPdf() {
         <section><h2>Ficha social transcrita</h2><div class="grid3">${profileRows}</div></section>
         <section><h2>Diagnostico socioeducativo global</h2><p>${escapeHtml(report.globalDiagnosis)}</p></section>
         <section><h2>Informe provisional integrado</h2><div class="program-grid">${synthesisRows || '<div class="card">Sin sintesis profesional generada.</div>'}</div></section>
+        <section><h2>Matriz clinica-social e indicadores evaluables</h2><div class="program-grid">${matrixRows || '<div class="card">Sin matriz clinica-social generada.</div>'}</div></section>
         ${caseData.dualDiagnosis?.applies ? `<section><h2>Patologia dual / diagnostico combinado</h2><div class="card"><p>${escapeHtml(dualDiagnosisText)}</p></div></section>` : ""}
         <section class="grid">
           <div class="card"><h2>Objetivos</h2><ul>${report.objectives.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>
