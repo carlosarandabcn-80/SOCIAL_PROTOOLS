@@ -1438,7 +1438,7 @@ svg text {
 
 .report {
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 .report-hero {
@@ -1472,6 +1472,102 @@ svg text {
 .report-hero strong {
   color: var(--cyan);
   white-space: nowrap;
+}
+
+.report-flow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.report-flow a {
+  min-height: 96px;
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(56, 139, 255, 0.16), transparent 58%),
+    var(--surface-3);
+  color: var(--text);
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  padding: 13px;
+  text-decoration: none;
+  transition:
+    border-color 0.18s ease,
+    transform 0.18s ease,
+    background 0.18s ease;
+}
+
+.report-flow a:hover,
+.report-flow a:focus-visible {
+  border-color: var(--electric-blue);
+  transform: translateY(-1px);
+}
+
+.report-flow span {
+  color: var(--electric-blue);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.report-flow strong {
+  font-size: 1rem;
+}
+
+.report-flow small {
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.report .report-section {
+  position: relative;
+  overflow: hidden;
+  scroll-margin-top: 18px;
+}
+
+.report .report-section::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--electric-blue), var(--cyan));
+  opacity: 0.85;
+}
+
+.report .report-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 0;
+}
+
+.report .report-section h3::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--line-soft);
+}
+
+.report-section-feature {
+  border-color: rgba(56, 139, 255, 0.42);
+  background:
+    linear-gradient(135deg, rgba(56, 139, 255, 0.16), rgba(65, 208, 216, 0.06)),
+    var(--surface);
+}
+
+.report-section-structured {
+  background:
+    linear-gradient(135deg, rgba(56, 139, 255, 0.08), transparent 42%),
+    var(--surface);
+}
+
+.report-diagnostic-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 14px;
+  align-items: stretch;
 }
 
 .metrics {
@@ -1705,14 +1801,16 @@ svg text {
 
 .profile-report {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
   gap: 10px;
 }
 
 .profile-item {
   border: 1px solid var(--line-soft);
   border-radius: 8px;
-  background: var(--surface-3);
+  background:
+    linear-gradient(135deg, rgba(56, 139, 255, 0.07), transparent 50%),
+    var(--surface-3);
   padding: 11px;
 }
 
@@ -2371,6 +2469,8 @@ svg text {
   }
 
   .metrics,
+  .report-flow,
+  .report-diagnostic-grid,
   .roadmap,
   .intervention-program,
   .academic-basis,
@@ -2407,6 +2507,8 @@ svg text {
   .risk-grid,
   .selected-resources,
   .metrics,
+  .report-flow,
+  .report-diagnostic-grid,
   .intervention-program,
   .academic-basis,
   .evidence-sources,

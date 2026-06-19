@@ -2259,6 +2259,22 @@ async function exportReportPdf() {
   const profileRows = profileReportRows(caseData)
     .map(([label, value]) => `<div><strong>${escapeHtml(label)}</strong><br>${escapeHtml(value || "No registrado")}</div>`)
     .join("");
+  const reportMapRows = [
+    ["01", "Ficha social", "Datos personales, administrativos, formativos, laborales y red familiar declarada."],
+    ["02", "Lectura socioeducativa", "Interpretacion global del caso con salud, dependencia y vulnerabilidad social."],
+    ["03", "Plan de intervencion", "Objetivos, metodologia, prevencion y fases de trabajo provisional."],
+    ["04", "Seguimiento", "Indicadores, cautelas profesionales y criterios de reajuste del itinerario."],
+    ["05", "Recursos territoriales", "Recursos institucionales y del tercer sector aplicables a la ciudad seleccionada."]
+  ]
+    .map(
+      ([number, title, text]) => `
+        <div class="report-map-item">
+          <span>${escapeHtml(number)}</span>
+          <div><strong>${escapeHtml(title)}</strong><p>${escapeHtml(text)}</p></div>
+        </div>
+      `
+    )
+    .join("");
   const familyRows = caseData.family?.noNetwork
     ? `<div class="card warning"><strong>Sin red familiar / sin red de apoyo identificada.</strong></div>`
     : (caseData.family?.members || [])
@@ -2440,6 +2456,36 @@ async function exportReportPdf() {
             font-size: 10.5px;
             font-weight: 800;
           }
+          .report-map {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+          }
+          .report-map-item {
+            display: grid;
+            grid-template-columns: 34px 1fr;
+            gap: 10px;
+            align-items: start;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #f7fbff;
+            padding: 10px 12px;
+          }
+          .report-map-item span {
+            color: var(--blue);
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: .08em;
+          }
+          .report-map-item strong {
+            display: block;
+            color: #102131;
+            margin-bottom: 2px;
+          }
+          .report-map-item p {
+            margin: 0;
+            color: var(--muted);
+          }
           .phase-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -2482,6 +2528,7 @@ async function exportReportPdf() {
             ? `<section class="card warning"><h2>Validacion automatica</h2><ul>${report.warnings.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></section>`
             : ""
         }
+        <section><h2>Mapa de lectura</h2><div class="report-map">${reportMapRows}</div></section>
         <section><h2>Ficha social transcrita</h2><div class="grid3">${profileRows}</div></section>
         <section><h2>Diagnostico socioeducativo global</h2><p>${escapeHtml(report.globalDiagnosis)}</p></section>
         <section><h2>Informe provisional integrado</h2><div class="program-grid">${synthesisRows || '<div class="card">Sin sintesis profesional generada.</div>'}</div></section>
