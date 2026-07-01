@@ -1969,7 +1969,7 @@ function renderRoadmap(report) {
         timeframe: phase.timeframe,
         focus: phase.focus,
         goal: phase.goal,
-        items: [...(phase.actions || []), ...(phase.indicators || []).map((indicator) => `Indicador: ${indicator}`)].slice(0, 6)
+        items: [...(phase.actions || []), ...(phase.indicators || []).map((indicator) => `Indicador: ${formatIndicatorText(indicator)}`)].slice(0, 6)
       }))
     : [
         { title: "1. Acogida y delimitacion", items: [report.objectives[0], report.strategies[0]] },
@@ -2133,15 +2133,50 @@ function renderClinicalSocialMatrix(report) {
         <dt>Coordinacion sociosanitaria</dt>
         <dd>${escapeHtml(row.coordination || "Pendiente de completar.")}</dd>
         <dt>Indicadores evaluables</dt>
-        <dd><ul>${listMarkup(row.indicators || [])}</ul></dd>
+        <dd><ul class="indicator-list">${indicatorMarkup(row.indicators || [])}</ul></dd>
       </dl>
     `;
     box.appendChild(card);
   });
 }
 
+function isIndicatorObject(item) {
+  return Boolean(item && typeof item === "object" && !Array.isArray(item));
+}
+
+function formatIndicatorText(item) {
+  if (!isIndicatorObject(item)) return String(item || "");
+  return [
+    item.criterion,
+    item.evidence ? `Evidencia: ${item.evidence}` : "",
+    item.collection ? `Recogida: ${item.collection}` : "",
+    item.owner ? `Responsable: ${item.owner}` : "",
+    item.timing ? `Momento: ${item.timing}` : ""
+  ]
+    .filter(Boolean)
+    .join(" | ");
+}
+
+function indicatorMarkup(items = []) {
+  return items
+    .filter(Boolean)
+    .map((item) => {
+      if (!isIndicatorObject(item)) return `<li>${escapeHtml(item)}</li>`;
+      return `
+        <li class="indicator-item">
+          <strong>${escapeHtml(item.criterion || "Indicador")}</strong>
+          <span><b>Evidencia:</b> ${escapeHtml(item.evidence || "Pendiente de definir.")}</span>
+          <span><b>Recogida:</b> ${escapeHtml(item.collection || "Pendiente de definir.")}</span>
+          <span><b>Responsable:</b> ${escapeHtml(item.owner || "Pendiente de asignar.")}</span>
+          <span><b>Momento:</b> ${escapeHtml(item.timing || "Pendiente de calendarizar.")}</span>
+        </li>
+      `;
+    })
+    .join("");
+}
+
 function listMarkup(items = []) {
-  return items.filter(Boolean).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  return items.filter(Boolean).map((item) => `<li>${escapeHtml(formatIndicatorText(item))}</li>`).join("");
 }
 
 function assetUrl(path) {
@@ -2178,7 +2213,8 @@ function renderInterventionProgram(report) {
   blocks.forEach(([title, items]) => {
     if (!items?.length) return;
     const card = create("article", "intervention-card");
-    card.innerHTML = `<h4>${escapeHtml(title)}</h4><ul>${listMarkup(items)}</ul>`;
+    const isIndicatorBlock = title.toLowerCase().includes("indicadores");
+    card.innerHTML = `<h4>${escapeHtml(title)}</h4><ul${isIndicatorBlock ? ' class="indicator-list"' : ""}>${isIndicatorBlock ? indicatorMarkup(items) : listMarkup(items)}</ul>`;
     box.appendChild(card);
   });
 

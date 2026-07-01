@@ -496,6 +496,16 @@ function asList(values = []) {
   return values.filter(Boolean).map((value) => String(value));
 }
 
+function evaluableIndicator(criterion, evidence, collection, owner, timing) {
+  return {
+    criterion,
+    evidence,
+    collection,
+    owner,
+    timing
+  };
+}
+
 function dualDiagnosisSummary(dualDiagnosis = {}) {
   if (!dualDiagnosis.applies) return "";
   const codes = (dualDiagnosis.diagnoses || [])
@@ -561,10 +571,34 @@ function buildClinicalSocialMatrix(caseData = {}, inference = {}, familyHealth =
       coordination:
         "Coordinar con atencion primaria, salud mental, adicciones, dependencia o recurso especializado segun conste, preservando consentimiento, confidencialidad y roles profesionales.",
       indicators: [
-        "Citas sanitarias/sociales mantenidas o reprogramadas con apoyo.",
-        "Comprension de pautas, recursos y senales de alerta por la persona usuaria.",
-        "Reduccion de barreras practicas: transporte, idioma, documentacion, estigma o acompanamiento.",
-        "Continuidad de rutinas basicas: descanso, alimentacion, autocuidado, medicacion indicada o reduccion de danos si procede."
+        evaluableIndicator(
+          "Continuidad de citas sanitarias y sociales",
+          "Citas mantenidas, justificadas o reprogramadas con apoyo documentado.",
+          "Agenda compartida, justificantes, registro de acompanamiento y contacto con recursos.",
+          "Educador/a social referente con recurso sanitario o social implicado.",
+          "Revision semanal inicial y balance a 30 dias."
+        ),
+        evaluableIndicator(
+          "Comprension de pautas y senales de alerta",
+          "La persona puede explicar con sus palabras pautas, recursos y senales de alarma.",
+          "Entrevista breve, lista de comprobacion y registro de dudas o barreras.",
+          "Educador/a social referente.",
+          "Al cierre de cada entrevista clave y en revision mensual."
+        ),
+        evaluableIndicator(
+          "Barreras practicas reducidas",
+          "Transporte, idioma, documentacion, estigma o acompanamiento cuentan con solucion activada o alternativa.",
+          "Hoja de barreras, derivaciones realizadas y resultado de cada gestion.",
+          "Educador/a social con servicios sociales, interprete o recurso comunitario.",
+          "Cada 15 dias hasta estabilizacion."
+        ),
+        evaluableIndicator(
+          "Rutinas basicas sostenidas",
+          "Mejora o mantenimiento de descanso, alimentacion, autocuidado, medicacion indicada o reduccion de danos.",
+          "Autoregistro sencillo, entrevista y contraste con recurso de apoyo si existe consentimiento.",
+          "Persona usuaria y educador/a social referente.",
+          "Revision quincenal y reajuste a 60-90 dias."
+        )
       ]
     });
   }
@@ -588,10 +622,34 @@ function buildClinicalSocialMatrix(caseData = {}, inference = {}, familyHealth =
       coordination:
         "Articular servicios sociales de atencion primaria, orientacion juridico-social, empleo, vivienda, prestaciones, tercer sector y recursos comunitarios de proximidad.",
       indicators: [
-        "Documentacion, empadronamiento, prestaciones o citas administrativas iniciadas.",
-        "Acceso efectivo a recurso territorial y registro de barreras encontradas.",
-        "Mejora o estabilizacion de vivienda, ingresos, alimentacion, transporte o conectividad.",
-        "Participacion de la persona en decisiones y comprension de derechos y obligaciones."
+        evaluableIndicator(
+          "Gestiones de derechos iniciadas",
+          "Documentacion, empadronamiento, prestaciones o citas administrativas con tramite iniciado o cita asignada.",
+          "Registro de gestiones, resguardos, citas y motivos de bloqueo.",
+          "Educador/a social con servicios sociales u orientacion juridico-social.",
+          "Revision semanal hasta apertura del tramite y balance a 30 dias."
+        ),
+        evaluableIndicator(
+          "Acceso real a recurso territorial",
+          "Primer contacto realizado, requisitos conocidos y barreras de acceso registradas.",
+          "Ficha de recurso, llamada/correo de confirmacion y seguimiento de asistencia.",
+          "Educador/a social referente y recurso territorial.",
+          "Primera revision a 15 dias y reevaluacion mensual."
+        ),
+        evaluableIndicator(
+          "Condiciones materiales estabilizadas",
+          "Vivienda, ingresos, alimentacion, transporte o conectividad se mantienen o mejoran respecto a la linea base.",
+          "Escala simple de situacion inicial/final, documentos disponibles y relato contrastado.",
+          "Educador/a social con persona usuaria y red de apoyo autorizada.",
+          "Linea base inicial, revision mensual y cierre a 90 dias."
+        ),
+        evaluableIndicator(
+          "Participacion informada",
+          "La persona toma decisiones sobre prioridades y comprende derechos, obligaciones y pasos del plan.",
+          "Acta breve de acuerdos, objetivos pactados y reformulaciones solicitadas.",
+          "Persona usuaria y educador/a social referente.",
+          "En cada acuerdo de plan y en cada reajuste."
+        )
       ]
     });
   }
@@ -606,10 +664,34 @@ function buildClinicalSocialMatrix(caseData = {}, inference = {}, familyHealth =
       coordination:
         "Coordinar reconocimiento o revision de dependencia/discapacidad, SAAD, servicios sociales, salud comunitaria, rehabilitacion, accesibilidad y respiro familiar si procede.",
       indicators: [
-        "Apoyos necesarios identificados por actividad y entorno.",
-        "Solicitud, revision o seguimiento de grado/PIA/discapacidad documentada si procede.",
-        "Reduccion de sobrecarga de cuidados y mejora de accesibilidad.",
-        "Aumento de autonomia funcional o participacion en actividades significativas."
+        evaluableIndicator(
+          "Apoyos definidos por actividad y entorno",
+          "Actividades de la vida diaria, barreras del domicilio y apoyos necesarios quedan descritos.",
+          "Entrevista funcional, observacion, checklist de apoyos y documentos de reconocimiento si existen.",
+          "Educador/a social con persona usuaria, familia cuidadora y servicios sociales.",
+          "Valoracion inicial y revision mensual."
+        ),
+        evaluableIndicator(
+          "Tramites de dependencia/discapacidad trazados",
+          "Solicitud, revision o seguimiento de grado, PIA o discapacidad queda documentado cuando procede.",
+          "Resguardos, citas, informes aportados y estado del expediente.",
+          "Educador/a social con servicios sociales de referencia.",
+          "Cada 30 dias hasta resolucion o siguiente hito administrativo."
+        ),
+        evaluableIndicator(
+          "Sobrecarga de cuidados reducida",
+          "Se activan descansos, reparto de tareas, apoyos formales o adaptaciones que alivian la carga.",
+          "Entrevista a cuidador/a, escala breve de sobrecarga percibida y registro de apoyos.",
+          "Educador/a social con unidad familiar y recurso de apoyo.",
+          "Linea base inicial, revision a 30 dias y ajuste a 90 dias."
+        ),
+        evaluableIndicator(
+          "Autonomia y participacion aumentadas",
+          "La persona participa en al menos una actividad significativa o realiza con mas apoyo ajustado una rutina prioritaria.",
+          "Plan de actividad, observacion o autoregistro y evidencia de asistencia/participacion.",
+          "Persona usuaria, educador/a social y recurso comunitario si aplica.",
+          "Revision quincenal o mensual."
+        )
       ]
     });
   }
@@ -626,10 +708,34 @@ function buildClinicalSocialMatrix(caseData = {}, inference = {}, familyHealth =
       coordination:
         "Usar genograma y sociograma para pactar apoyos seguros, limites, derivaciones comunitarias y referentes profesionales sin exponer a la persona a vinculos de riesgo.",
       indicators: [
-        "Numero de apoyos seguros y frecuencia de contacto registrada.",
-        "Vinculos de riesgo delimitados y plan de proteccion si procede.",
-        "Participacion en recurso comunitario, grupo, actividad formativa o espacio de apoyo.",
-        "Percepcion de apoyo, soledad y seguridad revisada periodicamente."
+        evaluableIndicator(
+          "Apoyos seguros identificados",
+          "Numero de apoyos seguros, tipo de apoyo y frecuencia de contacto registrados.",
+          "Sociograma, genograma y entrevista de red.",
+          "Educador/a social con persona usuaria.",
+          "Linea base inicial y revision mensual."
+        ),
+        evaluableIndicator(
+          "Vinculos de riesgo delimitados",
+          "Relaciones de riesgo, conflicto o sobrecarga cuentan con limites y plan de proteccion si procede.",
+          "Mapa relacional, acuerdos de seguridad y registro de incidentes o cambios.",
+          "Educador/a social con servicios sociales o circuito especializado si hay riesgo.",
+          "Revision semanal en riesgo alto; mensual en situacion estable."
+        ),
+        evaluableIndicator(
+          "Participacion comunitaria activada",
+          "Asistencia o contacto con recurso comunitario, grupo, actividad formativa o espacio de apoyo.",
+          "Registro de derivacion, confirmacion del recurso y seguimiento de asistencia.",
+          "Educador/a social y recurso comunitario.",
+          "Primer hito a 30 dias y seguimiento a 60-90 dias."
+        ),
+        evaluableIndicator(
+          "Apoyo percibido revisado",
+          "La persona valora cambios en soledad, seguridad y apoyo disponible.",
+          "Escala breve 0-10, entrevista y comparacion con linea base.",
+          "Persona usuaria y educador/a social referente.",
+          "Linea base, revision mensual y cierre del itinerario."
+        )
       ]
     });
   }
@@ -644,10 +750,34 @@ function buildClinicalSocialMatrix(caseData = {}, inference = {}, familyHealth =
       coordination:
         "Primera coordinacion con servicios sociales de referencia y, si aparecen indicios de salud o riesgo, derivacion prudente al circuito correspondiente.",
       indicators: [
-        "Ficha social minima completada.",
-        "Consentimiento y finalidad educativa/profesional aclarados.",
-        "Variables principales valoradas.",
-        "Primer objetivo pactado con la persona usuaria."
+        evaluableIndicator(
+          "Ficha social minima completada",
+          "Identificacion protegida, contexto, red, vivienda, ingresos y motivo de intervencion registrados.",
+          "Formulario de caso y revision de campos pendientes.",
+          "Educador/a social referente.",
+          "Primera entrevista o sesion academica de analisis."
+        ),
+        evaluableIndicator(
+          "Consentimiento y finalidad aclarados",
+          "La persona o el contexto educativo conoce finalidad, limites de confidencialidad y uso de datos.",
+          "Checkbox de consentimiento, nota de privacidad y registro de anonimizacion.",
+          "Educador/a social o estudiante responsable del caso academico.",
+          "Antes de exportar o conservar informacion."
+        ),
+        evaluableIndicator(
+          "Variables principales valoradas",
+          "Salud, dependencia, vulnerabilidad, red, familia y situacion economica quedan activadas o descartadas razonadamente.",
+          "Checklist de variables y observaciones profesionales.",
+          "Educador/a social referente.",
+          "Durante la formulacion inicial y antes del plan."
+        ),
+        evaluableIndicator(
+          "Primer objetivo pactado",
+          "Existe un objetivo pequeno, medible, comprensible y aceptado por la persona usuaria.",
+          "Acta breve de acuerdos o registro del plan individualizado.",
+          "Persona usuaria y educador/a social referente.",
+          "Cierre de la primera fase de acogida."
+        )
       ]
     });
   }
@@ -848,14 +978,50 @@ function buildInterventionProgram(caseData = {}, inference = {}, familyHealth = 
     };
   });
 
-  const indicators = asList([
-    "Asistencia a citas y continuidad de contacto con referente profesional.",
-    "Numero y calidad de apoyos seguros identificados en sociograma.",
-    "Acceso efectivo a recursos seleccionados y barreras encontradas.",
-    "Cambios en vivienda, ingresos, documentacion, empleo/formacion o prestaciones.",
-    "Autonomia percibida y funcionamiento cotidiano.",
-    "Reduccion de riesgos: aislamiento, sobrecarga, consumo, violencia, perdida residencial o abandono del plan."
-  ]);
+  const indicators = [
+    evaluableIndicator(
+      "Asistencia a citas y continuidad de contacto",
+      "Citas realizadas, ausencias justificadas y contacto mantenido con referente profesional.",
+      "Agenda de seguimiento, registro de llamadas/mensajes y hoja de asistencia.",
+      "Educador/a social referente.",
+      "Revision semanal o quincenal segun prioridad."
+    ),
+    evaluableIndicator(
+      "Apoyos seguros en red",
+      "Numero, calidad y disponibilidad de apoyos seguros identificados en sociograma.",
+      "Sociograma comparado, entrevista de red y registro de frecuencia de contacto.",
+      "Educador/a social con persona usuaria.",
+      "Linea base inicial, revision mensual y cierre."
+    ),
+    evaluableIndicator(
+      "Acceso efectivo a recursos",
+      "Recursos seleccionados contactados, requisitos conocidos y barreras resueltas o documentadas.",
+      "Ficha de recurso, derivaciones, confirmaciones y registro de barreras.",
+      "Educador/a social y recurso territorial.",
+      "Primer hito a 15-30 dias."
+    ),
+    evaluableIndicator(
+      "Cambios en condiciones de vida",
+      "Variacion en vivienda, ingresos, documentacion, empleo/formacion o prestaciones respecto a la linea base.",
+      "Comparativa inicial-final, documentos disponibles y entrevista de seguimiento.",
+      "Educador/a social con servicios sociales o empleo si procede.",
+      "Revision mensual y evaluacion a 90 dias."
+    ),
+    evaluableIndicator(
+      "Autonomia percibida y funcionamiento cotidiano",
+      "La persona identifica mayor autonomia, rutina o participacion en actividades significativas.",
+      "Escala breve 0-10, autoregistro sencillo y observacion profesional.",
+      "Persona usuaria y educador/a social referente.",
+      "Revision mensual."
+    ),
+    evaluableIndicator(
+      "Riesgos reducidos o contenidos",
+      "Aislamiento, sobrecarga, consumo, violencia, perdida residencial o abandono del plan disminuyen o cuentan con plan de contingencia.",
+      "Registro de incidentes, senales de alerta, plan de seguridad y coordinaciones realizadas.",
+      "Educador/a social con red profesional pertinente.",
+      "Revision semanal en riesgo alto; mensual en seguimiento ordinario."
+    )
+  ];
 
   const cautions = asList([
     "El informe es provisional y debe revisarse con entrevista, contraste documental y consentimiento informado.",
